@@ -1,0 +1,80 @@
+# .NET Core Backend
+backend-temp/bin/
+backend-temp/obj/
+backend-temp/logs/
+*.suo
+*.user
+.vs/
+.vscode/
+*.userprefs
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+*.log
+app-*.log
+
+# Migrations (usually keep these in source control, but listing in case you want to ignore)
+# backend-temp/Migrations/*
+
+# Sensitive Configuration
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Staging.json
+
+# Frontend
+client/node_modules/
+client/dist/
+client/build/
+client/.env
+client/.env.local
+client/.env.development
+client/.env.production
+client/.env.test
+client/npm-debug.log*
+client/yarn-debug.log*
+client/yarn-error.log*
+
+# Build results
+[Dd]ist/
+[Bb]uild/
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Misc
+.DS_Store
+*.swp
+*.swo
+*~
+*.db
+*.sqlite
+*.sqlite3
+
+# TypeScript
+*.tsbuildinfo
+
+# Package locks (decide if you want to ignore these)
+# package-lock.json
+# yarn.lock
+
+# Cache
+.eslintcache
+project.nuget.cache
+*.cache
+
+# Visual Studio files
+*.ntvs*
+*.njsproj
+*.sln.docstates
+time.sln.DotSettings.user
+
+# Environment files
+.env
+.env.local
+.env.*
+!.env.example
