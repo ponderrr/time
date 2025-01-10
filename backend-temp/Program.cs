@@ -12,16 +12,33 @@ using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Diagnostics;
 using DotNetEnv;
-Env.Load(); // Load .env file
+
+// Load .env file
+Env.Load();
+Console.WriteLine($"ADMIN_USERNAME from env: {Environment.GetEnvironmentVariable("ADMIN_USERNAME")}");
+Console.WriteLine($"ALLOWED_ORIGINS from env: {Environment.GetEnvironmentVariable("ALLOWED_ORIGINS")}");
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+// Load environment variables into configuration
 builder.Configuration["ConnectionStrings:DefaultConnection"] = Environment.GetEnvironmentVariable("CONNECTIONSTRING");
 builder.Configuration["Jwt:Key"] = Environment.GetEnvironmentVariable("JWT_KEY");
 builder.Configuration["Jwt:Issuer"] = Environment.GetEnvironmentVariable("JWT_ISSUER");
 builder.Configuration["Jwt:Audience"] = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
 builder.Configuration["Jwt:ExpirationInMinutes"] = Environment.GetEnvironmentVariable("JWT_EXPIRATION_MINUTES");
+
+// Validate configuration for JWT
+void ValidateJwtConfig(IConfiguration configuration)
+{
+    if (string.IsNullOrEmpty(configuration["Jwt:Key"]) ||
+        string.IsNullOrEmpty(configuration["Jwt:Issuer"]) ||
+        string.IsNullOrEmpty(configuration["Jwt:Audience"]))
+    {
+        throw new InvalidOperationException("JWT configuration is incomplete.");
+    }
+}
+ValidateJwtConfig(builder.Configuration);
 
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()
@@ -34,7 +51,7 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-// Add services to the container.
+// Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -90,11 +107,17 @@ builder.Services.AddScoped<ISecurityService, SecurityService>();
 // Add Rate Limiting
 builder.Services.AddRateLimiter(options =>
 {
-    options.AddFixedWindowLimiter("fixed", options =>
+    options.AddPolicy("LoginPolicy", context =>
     {
-        options.AutoReplenishment = true;
-        options.PermitLimit = 10;
-        options.Window = TimeSpan.FromSeconds(10);
+        return RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5, // Allow 5 requests per window
+                Window = TimeSpan.FromMinutes(1), // 1-minute window
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit = 2 // Allow up to 2 queued requests
+            });
     });
 });
 
@@ -102,7 +125,7 @@ builder.Services.AddRateLimiter(options =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        var jwtKey = builder.Configuration["Jwt:Key"] ?? 
+        var jwtKey = builder.Configuration["Jwt:Key"] ??
             throw new InvalidOperationException("JWT Key is not configured");
 
         options.TokenValidationParameters = new TokenValidationParameters
@@ -116,7 +139,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero
         };
     });
-    
+
 // Add Authorization
 builder.Services.AddAuthorization();
 
@@ -126,7 +149,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowViteApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173")
+            var allowedOrigins = Environment.GetEnvironmentVariable("ALLOWED_ORIGINS")
+                ?? throw new InvalidOperationException("ALLOWED_ORIGINS environment variable is not configured");
+
+            policy.WithOrigins(allowedOrigins)
                   .AllowAnyMethod()
                   .AllowAnyHeader()
                   .AllowCredentials();
@@ -139,14 +165,13 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Admin Portal API V1");
-        // Changed from "api-docs" to "swagger"
         c.RoutePrefix = "swagger";
     });
 }
@@ -160,13 +185,13 @@ app.Use(async (context, next) =>
     context.Response.Headers["X-Frame-Options"] = "DENY";
     context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
     context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
-    context.Response.Headers["Content-Security-Policy"] = 
+    context.Response.Headers["Content-Security-Policy"] =
         "default-src 'self'; " +
         "img-src 'self' data: https:; " +
         "font-src 'self' https: data:; " +
         "style-src 'self' 'unsafe-inline' https:; " +
         "script-src 'self' 'unsafe-inline' 'unsafe-eval';";
-    
+
     await next();
 });
 
@@ -223,7 +248,7 @@ public class ErrorDto
 {
     public int Code { get; set; }
     public string Message { get; set; } = string.Empty;
-    
+
     public override string ToString()
     {
         return System.Text.Json.JsonSerializer.Serialize(this);

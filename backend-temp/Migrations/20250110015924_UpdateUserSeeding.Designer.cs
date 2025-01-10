@@ -4,6 +4,7 @@ using LearningStarter.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LearningStarter.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250110015924_UpdateUserSeeding")]
+    partial class UpdateUserSeeding
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -496,9 +499,9 @@ namespace LearningStarter.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 1, 10, 2, 6, 59, 422, DateTimeKind.Utc).AddTicks(3793),
+                            CreatedAt = new DateTime(2025, 1, 10, 1, 59, 24, 89, DateTimeKind.Utc).AddTicks(7939),
                             IsAdmin = true,
-                            Password = "$2a$11$kxAQMtgz1kWmPCrIiHhws.RE9Df/UE58xl4/fzA1GZOntgQUS4SKe",
+                            Password = "$2a$11$gDIIGXm5ouD2IIkLnq2bBuIDG5uwVrc2kaJqBpSwiL5/gbbttq1uC",
                             Username = "andrew.ponder"
                         });
                 });

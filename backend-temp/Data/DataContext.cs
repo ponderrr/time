@@ -226,6 +226,9 @@ public class DataContext : DbContext
     public required DbSet<Location> Locations { get; set; }
     public required DbSet<Product> Products { get; set; }
     public required DbSet<Review> Reviews { get; set; }
+
+    public required DbSet<RevokedToken> RevokedTokens { get; set; }
+
     public required DbSet<Tag> Tags { get; set; }
     public required DbSet<UserActivity> UserActivities { get; set; }
     public required DbSet<User> Users { get; set; }

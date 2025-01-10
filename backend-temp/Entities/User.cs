@@ -17,19 +17,25 @@ namespace LearningStarter.Entities
     }
 
     public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
+{
+    public void Configure(EntityTypeBuilder<User> builder)
     {
-        public void Configure(EntityTypeBuilder<User> builder)
+        builder.ToTable("User");
+
+        var username = Environment.GetEnvironmentVariable("ADMIN_USERNAME") 
+            ?? throw new InvalidOperationException("ADMIN_USERNAME not set in environment variables");
+        
+        var password = Environment.GetEnvironmentVariable("ADMIN_PASSWORD") 
+            ?? throw new InvalidOperationException("ADMIN_PASSWORD not set in environment variables");
+
+        builder.HasData(new User
         {
-            builder.ToTable("User");
-            
-            builder.HasData(new User 
-            { 
-                Id = 1,
-                Username = "admin",
-                Password = BCrypt.Net.BCrypt.HashPassword("admin123"),
-                IsAdmin = true,
-                CreatedAt = DateTime.UtcNow
-            });
-        }
+            Id = 1,
+            Username = username,
+            Password = BCrypt.Net.BCrypt.HashPassword(password),
+            IsAdmin = true,
+            CreatedAt = DateTime.UtcNow
+        });
     }
+}
 }

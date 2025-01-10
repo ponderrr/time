@@ -9,12 +9,15 @@ using LearningStarter.Services;
 using LearningStarter.Data;
 using LearningStarter.Entities;
 using Microsoft.EntityFrameworkCore;
-using LearningStarter.Common; 
+using LearningStarter.Common;
+using Microsoft.AspNetCore.RateLimiting;
+using Serilog;
 
 namespace LearningStarter.Controllers
 {
     [ApiController]
     [Route("api/auth")]
+    [EnableRateLimiting("LoginPolicy")]
     public class AuthController : ControllerBase
     {
         private readonly DataContext _dataContext;
@@ -22,7 +25,7 @@ namespace LearningStarter.Controllers
         private readonly IConfiguration _configuration;
 
         public AuthController(
-            DataContext dataContext, 
+            DataContext dataContext,
             ISecurityService securityService,
             IConfiguration configuration)
         {
@@ -32,43 +35,72 @@ namespace LearningStarter.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginDto loginDto)
+public IActionResult Login([FromBody] LoginDto loginDto)
+{
+    Log.Information($"Login attempt for username: {loginDto.Username}");
+    
+    var response = new Response<LoginResponseDto>();  // Keep the generic Response
+
+    var user = _dataContext.Users
+        .FirstOrDefault(u => u.Username == loginDto.Username);
+
+    if (user == null)
+    {
+        Log.Warning($"User not found: {loginDto.Username}");
+        response.AddError("auth", "Invalid credentials");
+        return BadRequest(response);
+    }
+
+    if (!_securityService.VerifyPassword(loginDto.Password, user.Password))
+    {
+        Log.Warning($"Invalid password for user: {loginDto.Username}");
+        response.AddError("auth", "Invalid credentials");
+        return BadRequest(response);
+    }
+
+    var token = GenerateJwtToken(user);
+    
+    // Update last login time - this is useful for tracking
+    user.LastLoginAt = DateTime.UtcNow;
+    _dataContext.SaveChanges();
+
+    response.Data = new LoginResponseDto
+    {
+        UserId = user.Id,
+        Username = user.Username,
+        Token = token,
+        IsAdmin = user.IsAdmin
+    };
+
+    Log.Information($"Successful login for user: {loginDto.Username}");
+    return Ok(response);
+}
+
+        [HttpPost("logout")]
+        public IActionResult Logout()
         {
-            var response = new Response();
-
-            var user = _dataContext.Users
-                .FirstOrDefault(u => u.Username == loginDto.Username);
-
-            if (user == null || !_securityService.VerifyPassword(loginDto.Password, user.Password))
+            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            _dataContext.RevokedTokens.Add(new RevokedToken
             {
-                response.AddError("auth", "Invalid credentials");
-                return BadRequest(response);
-            }
-
-            var token = GenerateJwtToken(user);
-            var refreshToken = _securityService.GenerateRefreshToken();
-
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-            user.LastLoginAt = DateTime.UtcNow;
-
+                Token = token,
+                RevokedAt = DateTime.UtcNow
+            });
             _dataContext.SaveChanges();
 
-            response.Data = new LoginResponseDto
-            {
-                UserId = user.Id,
-                Username = user.Username,
-                Token = token,
-                RefreshToken = refreshToken,
-                IsAdmin = user.IsAdmin
-            };
-            return Ok(response);
+            HttpContext.Response.Cookies.Delete("refreshToken");
+
+            Log.Information("User logged out successfully.");
+            return Ok(new { Message = "Logged out successfully." });
         }
 
         private string GenerateJwtToken(User user)
         {
-            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"] ?? 
+            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"] ??
                 throw new InvalidOperationException("JWT Key is not configured"));
+
+            double.TryParse(_configuration["Jwt:ExpirationInMinutes"], out var expirationMinutes);
+            expirationMinutes = expirationMinutes > 0 ? expirationMinutes : 60;
+
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -78,8 +110,7 @@ namespace LearningStarter.Controllers
                     new Claim(ClaimTypes.Name, user.Username),
                     new Claim(ClaimTypes.Role, user.IsAdmin ? "Admin" : "User")
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(
-                    double.Parse(_configuration["Jwt:ExpirationInMinutes"] ?? "60")),
+                Expires = DateTime.UtcNow.AddMinutes(expirationMinutes),
                 Issuer = _configuration["Jwt:Issuer"],
                 Audience = _configuration["Jwt:Audience"],
                 SigningCredentials = new SigningCredentials(
@@ -103,7 +134,6 @@ namespace LearningStarter.Controllers
         public int UserId { get; set; }
         public required string Username { get; set; }
         public required string Token { get; set; }
-        public required string RefreshToken { get; set; }
         public bool IsAdmin { get; set; }
     }
 }

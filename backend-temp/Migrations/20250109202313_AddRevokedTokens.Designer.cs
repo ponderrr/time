@@ -4,6 +4,7 @@ using LearningStarter.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LearningStarter.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250109202313_AddRevokedTokens")]
+    partial class AddRevokedTokens
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -496,10 +499,10 @@ namespace LearningStarter.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 1, 10, 2, 6, 59, 422, DateTimeKind.Utc).AddTicks(3793),
+                            CreatedAt = new DateTime(2025, 1, 9, 20, 23, 12, 763, DateTimeKind.Utc).AddTicks(2664),
                             IsAdmin = true,
-                            Password = "$2a$11$kxAQMtgz1kWmPCrIiHhws.RE9Df/UE58xl4/fzA1GZOntgQUS4SKe",
-                            Username = "andrew.ponder"
+                            Password = "$2a$11$BrTPHEYvFDZ3nklWYJOfte.f2qCk1nsj9pmnvciJN/tQFrsdcCMES",
+                            Username = "mrfro"
                         });
                 });
 
