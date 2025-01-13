@@ -1,30 +1,144 @@
+// import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+// import { MantineProvider, AppShell, ActionIcon, Box, createTheme } from '@mantine/core';
+// import { Notifications } from '@mantine/notifications';
+// import { IconSun } from '@tabler/icons-react'; // Removed IconMoonStars since we're not using it yet
+// import '@mantine/core/styles.css';
+// import '@mantine/notifications/styles.css';
+// import { Navigation } from './components/Navigation';
+// import { Login } from './pages/auth/login';
+
+// // Import your page components...
+// import { ActivitiesListing } from './pages/activities/activities-listing';
+// import { ActivitiesCreate } from './pages/activities/activities-create';
+// import { ActivitiesUpdate } from './pages/activities/activities-update';
+// import { ActivityTypesListing } from './pages/activity-types/activity-types-listing';
+// import { ActivityTypesCreate } from './pages/activity-types/activity-types-create';
+// import { ActivityTypesUpdate } from './pages/activity-types/activity-types-update';
+// import { LocationsListing } from './pages/locations/locations-listing';
+// import { LocationsCreate } from './pages/locations/locations-create';
+// import { LocationsUpdate } from './pages/locations/locations-update';
+// import { ProductsListing } from './pages/products/products-listing';
+// import { ProductsCreate } from './pages/products/products-create';
+// import { ProductsUpdate } from './pages/products/products-update';
+// import { ActivityTagsListing } from './pages/tags/activity-tags-listing';
+// import { ActivityTagsCreate } from './pages/tags/activity-tags-create';
+// import { ActivityTagsUpdate } from './pages/tags/activity-tags-update';
+
+// import { routes } from './routes';
+
+// const theme = createTheme({
+//   primaryColor: 'brand',
+//   colors: {
+//     brand: [
+//       '#FFF9E6',
+//       '#FFF3CC',
+//       '#FFE799',
+//       '#FFDB66',
+//       '#FFCF33',
+//       '#FFC300',
+//       '#E6B000',
+//       '#CC9C00',
+//       '#B38900',
+//       '#997300',
+//     ],
+//   },
+// });
+
+// function App() {
+//   return (
+//     <MantineProvider theme={theme} defaultColorScheme="light">
+//       <Notifications />
+//       <Router>
+//         <Routes>
+//           <Route path="/login" element={<Login />} />
+//           <Route
+//             path="/*"
+//             element={
+//               <AppShell
+//                 header={{ height: 60 }}
+//                 padding="md"
+//               >
+//                 <AppShell.Header>
+//                   <Navigation />
+//                 </AppShell.Header>
+//                 <AppShell.Main>
+//                   <ActionIcon
+//                     variant="default"
+//                     size="lg"
+//                     aria-label="Toggle color scheme"
+//                     style={{
+//                       position: 'fixed',
+//                       bottom: '20px',
+//                       right: '20px',
+//                       zIndex: 1000
+//                     }}
+//                   >
+//                     <IconSun size="1.2rem" />
+//                   </ActionIcon>
+                  
+//                   <Box style={{ display: 'flex', justifyContent: 'center' }}>
+//                     <Box style={{ width: '100%', maxWidth: '1200px' }}>
+//                       <Routes>
+//                         <Route path={routes.activityListing} element={<ActivitiesListing />} />
+//                         <Route path={routes.activityCreate} element={<ActivitiesCreate />} />
+//                         <Route path={routes.activityUpdate} element={<ActivitiesUpdate />} />
+                        
+//                         <Route path={routes.activityTypeListing} element={<ActivityTypesListing />} />
+//                         <Route path={routes.activityTypeCreate} element={<ActivityTypesCreate />} />
+//                         <Route path={routes.activityTypeUpdate} element={<ActivityTypesUpdate />} />
+                        
+//                         <Route path={routes.locationListing} element={<LocationsListing />} />
+//                         <Route path={routes.locationCreate} element={<LocationsCreate />} />
+//                         <Route path={routes.locationUpdate} element={<LocationsUpdate />} />
+                        
+//                         <Route path={routes.productListing} element={<ProductsListing />} />
+//                         <Route path={routes.productCreate} element={<ProductsCreate />} />
+//                         <Route path={routes.productUpdate} element={<ProductsUpdate />} />
+                        
+//                         <Route path={routes.activityTagListing} element={<ActivityTagsListing />} />
+//                         <Route path={routes.activityTagCreate} element={<ActivityTagsCreate />} />
+//                         <Route path={routes.activityTagUpdate} element={<ActivityTagsUpdate />} />
+                        
+//                         <Route path="/" element={<Navigate to="/login" />} />
+//                       </Routes>
+//                     </Box>
+//                   </Box>
+//                 </AppShell.Main>
+//               </AppShell>
+//             }
+//           />
+//         </Routes>
+//       </Router>
+//     </MantineProvider>
+//   );
+// }
+
+// export default App;
+
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { MantineProvider } from '@mantine/core';
+import { MantineProvider, AppShell, ActionIcon, Box } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
+import { IconSun, IconMoonStars } from '@tabler/icons-react';
+import { useState } from 'react';
+import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
 import { Navigation } from './components/Navigation';
+import { theme } from './theme';
 import { Login } from './pages/auth/login';
 
-// Activities
+// Import your page components...
 import { ActivitiesListing } from './pages/activities/activities-listing';
 import { ActivitiesCreate } from './pages/activities/activities-create';
 import { ActivitiesUpdate } from './pages/activities/activities-update';
-
-// Activity Types
 import { ActivityTypesListing } from './pages/activity-types/activity-types-listing';
 import { ActivityTypesCreate } from './pages/activity-types/activity-types-create';
 import { ActivityTypesUpdate } from './pages/activity-types/activity-types-update';
-
-// Locations
 import { LocationsListing } from './pages/locations/locations-listing';
 import { LocationsCreate } from './pages/locations/locations-create';
 import { LocationsUpdate } from './pages/locations/locations-update';
-
-// Products
 import { ProductsListing } from './pages/products/products-listing';
 import { ProductsCreate } from './pages/products/products-create';
 import { ProductsUpdate } from './pages/products/products-update';
-
-// Tags
 import { ActivityTagsListing } from './pages/tags/activity-tags-listing';
 import { ActivityTagsCreate } from './pages/tags/activity-tags-create';
 import { ActivityTagsUpdate } from './pages/tags/activity-tags-update';
@@ -32,50 +146,81 @@ import { ActivityTagsUpdate } from './pages/tags/activity-tags-update';
 import { routes } from './routes';
 
 function App() {
- return (
-   <MantineProvider>
-     <Notifications />
-     <Router>
-       <Routes>
-         <Route path="/login" element={<Login />} />
-         <Route path="/*" element={
-           <>
-             <Navigation />
-             <Routes>
-               {/* Activities */}
-               <Route path={routes.activityListing} element={<ActivitiesListing />} />
-               <Route path={routes.activityCreate} element={<ActivitiesCreate />} />
-               <Route path={routes.activityUpdate} element={<ActivitiesUpdate />} />
+  const [colorScheme, setColorScheme] = useState<'light' | 'dark'>('light');
 
-               {/* Activity Types */}
-               <Route path={routes.activityTypeListing} element={<ActivityTypesListing />} />
-               <Route path={routes.activityTypeCreate} element={<ActivityTypesCreate />} />
-               <Route path={routes.activityTypeUpdate} element={<ActivityTypesUpdate />} />
+  const toggleColorScheme = () => {
+    setColorScheme(previous => previous === 'dark' ? 'light' : 'dark');
+  };
 
-               {/* Locations */}
-               <Route path={routes.locationListing} element={<LocationsListing />} />
-               <Route path={routes.locationCreate} element={<LocationsCreate />} />
-               <Route path={routes.locationUpdate} element={<LocationsUpdate />} />
-
-               {/* Products */}
-               <Route path={routes.productListing} element={<ProductsListing />} />
-               <Route path={routes.productCreate} element={<ProductsCreate />} />
-               <Route path={routes.productUpdate} element={<ProductsUpdate />} />
-
-               {/* Tags */}
-               <Route path={routes.activityTagListing} element={<ActivityTagsListing />} />
-               <Route path={routes.activityTagCreate} element={<ActivityTagsCreate />} />
-               <Route path={routes.activityTagUpdate} element={<ActivityTagsUpdate />} />
-
-               {/* Default route */}
-               <Route path="/" element={<Navigate to="/login" />} />
-             </Routes>
-           </>
-         } />
-       </Routes>
-     </Router>
-   </MantineProvider>
- );
+  return (
+    <MantineProvider 
+      theme={theme} 
+      defaultColorScheme={colorScheme}
+    >
+      <Notifications />
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/*"
+            element={
+              <AppShell
+                header={{ height: 60 }}
+                padding="md"
+              >
+                <AppShell.Header>
+                  <Navigation isDark={colorScheme === 'dark'} />
+                </AppShell.Header>
+                <AppShell.Main>
+                  <ActionIcon
+                    variant="default"
+                    size="lg"
+                    onClick={toggleColorScheme}
+                    aria-label="Toggle color scheme"
+                    className="fixed bottom-5 right-5 z-50 focus:outline-none"
+                  >
+                    {colorScheme === 'dark' ? (
+                      <IconSun className="w-5 h-5" />
+                    ) : (
+                      <IconMoonStars className="w-5 h-5" />
+                    )}
+                  </ActionIcon>
+                  
+                  <Box className="flex justify-center">
+                    <Box className="w-full max-w-7xl px-4">
+                      <Routes>
+                        <Route path={routes.activityListing} element={<ActivitiesListing />} />
+                        <Route path={routes.activityCreate} element={<ActivitiesCreate />} />
+                        <Route path={routes.activityUpdate} element={<ActivitiesUpdate />} />
+                        
+                        <Route path={routes.activityTypeListing} element={<ActivityTypesListing />} />
+                        <Route path={routes.activityTypeCreate} element={<ActivityTypesCreate />} />
+                        <Route path={routes.activityTypeUpdate} element={<ActivityTypesUpdate />} />
+                        
+                        <Route path={routes.locationListing} element={<LocationsListing />} />
+                        <Route path={routes.locationCreate} element={<LocationsCreate />} />
+                        <Route path={routes.locationUpdate} element={<LocationsUpdate />} />
+                        
+                        <Route path={routes.productListing} element={<ProductsListing />} />
+                        <Route path={routes.productCreate} element={<ProductsCreate />} />
+                        <Route path={routes.productUpdate} element={<ProductsUpdate />} />
+                        
+                        <Route path={routes.activityTagListing} element={<ActivityTagsListing />} />
+                        <Route path={routes.activityTagCreate} element={<ActivityTagsCreate />} />
+                        <Route path={routes.activityTagUpdate} element={<ActivityTagsUpdate />} />
+                        
+                        <Route path="/" element={<Navigate to="/login" />} />
+                      </Routes>
+                    </Box>
+                  </Box>
+                </AppShell.Main>
+              </AppShell>
+            }
+          />
+        </Routes>
+      </Router>
+    </MantineProvider>
+  );
 }
 
 export default App;

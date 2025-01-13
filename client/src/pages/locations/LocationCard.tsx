@@ -8,31 +8,31 @@ type LocationCardProps = {
 
 const LocationCard = ({ location, onEdit }: LocationCardProps) => {
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
-      <Group justify="space-between" mb="xs">
-        <Text fw={500}>{location.name}</Text>
-        <Badge color="blue" variant="light">
-          {location.state}
-        </Badge>
-      </Group>
-
+    <Card shadow="sm" padding="lg" radius="md" withBorder className="w-full max-w-[380px]">
       <Stack gap="xs">
+        <Group justify="space-between">
+          <Text fw={500} size="lg">{location.name}</Text>
+          <Badge color="brand" variant="light">
+            {location.state}
+          </Badge>
+        </Group>
+
         <Text size="sm" c="dimmed">
           {location.city}, {location.country}
         </Text>
         <Text size="sm">{location.description}</Text>
-      </Stack>
 
-      <Button
-        variant="light"
-        color="blue"
-        fullWidth
-        mt="md"
-        radius="md"
-        onClick={() => onEdit(location.id)}
-      >
-        Edit Location
-      </Button>
+        <Button
+          variant="light"
+          color="brand"
+          fullWidth
+          mt="md"
+          radius="md"
+          onClick={() => onEdit(location.id)}
+        >
+          Edit Location
+        </Button>
+      </Stack>
     </Card>
   );
 };

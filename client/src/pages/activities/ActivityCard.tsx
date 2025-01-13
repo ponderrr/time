@@ -1,4 +1,4 @@
-import { Card, Group, Text, Badge, Stack, Flex, Button, Image } from '@mantine/core';
+import { Card, Group, Text, Badge, Stack, Button, Flex, Image } from '@mantine/core';
 import { ActivityGetDto } from '../../constants/types';
 
 type ActivityCardProps = {
@@ -20,7 +20,7 @@ const PriceBar = ({ price }: { price: number }) => {
             style={{
               width: '20px',
               height: '8px',
-              backgroundColor: i < filledSegments ? '#228BE6' : '#E9ECEF',
+              backgroundColor: i < filledSegments ? 'var(--mantine-color-brand-6)' : '#E9ECEF',
               borderRadius: '2px'
             }}
           />
@@ -55,7 +55,7 @@ const ActivityCard = ({ activity, onEdit }: ActivityCardProps) => {
           fallbackSrc="/api/placeholder/400/200"
         />
         
-        <Badge color="blue" size="lg" radius="sm">
+        <Badge color="brand" size="lg" radius="sm">
           {activity.activityType?.name}
         </Badge>
 
@@ -74,53 +74,53 @@ const ActivityCard = ({ activity, onEdit }: ActivityCardProps) => {
 
         <Group mt="xs">
           {activity.tags?.map(tag => (
-            <Badge key={tag.id} color="gray" variant="light">
+            <Badge key={tag.id} color="brand" variant="light">
               {tag.name}
             </Badge>
           ))}
         </Group>
 
         <Text fw={500} size="sm" mt="md">
-  Available Products ({activity.products?.length || 0}):
-</Text>
-<div className="grid grid-cols-2 gap-2">
-  {activity.products?.map(product => (
-    <Card 
-      key={product.id}
-      padding="xs"
-      radius="md"
-      withBorder
-      className="bg-slate-50 hover:bg-slate-100 transition-colors duration-200"
-    >
-      <Stack gap={2}>
-        <Group justify="space-between" align="center">
-          <Text size="sm" fw={500} className="line-clamp-1">
-            {product.name}
-          </Text>
-          <Badge size="sm" variant="light">
-            ${product.price.toFixed(2)}
-          </Badge>
-        </Group>
-        {product.description && (
-          <Text size="xs" c="dimmed" className="line-clamp-2">
-            {product.description}
-          </Text>
-        )}
-        {product.locationName && (
-          <Text size="xs" c="dimmed" className="italic">
-            Available at: {product.locationName}
-          </Text>
-        )}
-      </Stack>
-    </Card>
-  ))}
-</div>
+          Available Products ({activity.products?.length || 0}):
+        </Text>
+        <div className="grid grid-cols-2 gap-2">
+          {activity.products?.map(product => (
+            <Card 
+              key={product.id}
+              padding="xs"
+              radius="md"
+              withBorder
+              className="bg-slate-50 hover:bg-slate-100 transition-colors duration-200"
+            >
+              <Stack gap={2}>
+                <Group justify="space-between" align="center">
+                  <Text size="sm" fw={500} className="line-clamp-1">
+                    {product.name}
+                  </Text>
+                  <Badge size="sm" variant="light" color="brand">
+                    ${product.price.toFixed(2)}
+                  </Badge>
+                </Group>
+                {product.description && (
+                  <Text size="xs" c="dimmed" className="line-clamp-2">
+                    {product.description}
+                  </Text>
+                )}
+                {product.locationName && (
+                  <Text size="xs" c="dimmed" className="italic">
+                    Available at: {product.locationName}
+                  </Text>
+                )}
+              </Stack>
+            </Card>
+          ))}
+        </div>
 
         <Flex justify="space-between" align="center" mt="md">
           <PriceBar price={getPriceRating(activity.products)} />
           <Button 
             variant="light"
-            color="blue"
+            color="brand"
             onClick={() => onEdit(activity.id)}
           >
             Edit Activity

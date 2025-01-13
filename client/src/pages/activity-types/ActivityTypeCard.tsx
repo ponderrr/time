@@ -1,4 +1,4 @@
-import { Card, Text, Button } from '@mantine/core';
+import { Card, Text, Button, Stack } from '@mantine/core';
 import { ActivityTypeGetDto } from '../../constants/types';
 
 type ActivityTypeCardProps = {
@@ -8,21 +8,21 @@ type ActivityTypeCardProps = {
 
 const ActivityTypeCard = ({ activityType, onEdit }: ActivityTypeCardProps) => {
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
-      <Text size="lg" fw={500} mb="md">
-        {activityType.name}
-      </Text>
+    <Card shadow="sm" padding="lg" radius="md" withBorder className="w-full max-w-[380px]">
+      <Stack gap="md">
+        <Text fw={500} size="lg">
+          {activityType.name}
+        </Text>
 
-      <Button
-        variant="light"
-        color="blue"
-        fullWidth
-        mt="md"
-        radius="md"
-        onClick={() => onEdit(activityType.id)}
-      >
-        Edit Activity Type
-      </Button>
+        <Button
+          variant="light"
+          color="brand"
+          fullWidth
+          onClick={() => onEdit(activityType.id)}
+        >
+          Edit Activity Type
+        </Button>
+      </Stack>
     </Card>
   );
 };

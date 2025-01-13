@@ -217,6 +217,105 @@ public class DataContext : DbContext
                 Description = "Concert refreshments",
             }
         );
+        
+var locationRefs = locations;
+var activityTypeRefs = activityTypes;
+
+modelBuilder.Entity<Activity>().HasData(
+    new 
+    {
+        Id = 1,
+        Name = "New Orleans Saints Game",
+        LocationId = 1,        
+        ActivityTypeId = 1,    
+        StartTime = DateTimeOffset.Parse("2024-01-20T13:00:00+00:00"),
+        EndTime = DateTimeOffset.Parse("2024-01-20T16:00:00+00:00"),
+        ImageUrl = "https://thespun.com/.image/t_share/MTgzMTI4NjUzOTY5NjMwNjI3/divisional-round---philadelphia-eagles-v-new-orleans-saints.jpg"
+    },
+    new 
+    {
+        Id = 2,
+        Name = "Dinner at Restaurant August",
+        LocationId = 2,   
+        ActivityTypeId = 2,    
+        StartTime = DateTimeOffset.Parse("2024-01-14T18:00:00+00:00"),
+        EndTime = DateTimeOffset.Parse("2024-01-14T20:00:00+00:00"),
+        ImageUrl = "https://resizer.otstatic.com/v2/photos/wide-huge/3/68484709.jpg"
+    },
+    new 
+    {
+        Id = 3,
+        Name = "World War 2 Museum Experience",
+        LocationId = 3,      
+        ActivityTypeId = 3,    
+        StartTime = DateTimeOffset.Parse("2024-01-16T09:00:00+00:00"),
+        EndTime = DateTimeOffset.Parse("2024-01-16T17:00:00+00:00"),
+        ImageUrl = "https://assets.simpleviewinc.com/simpleview/image/upload/crm/neworleans/_MG_7836_4B6A886E-0980-8656-351CA87266FB87CF-4b6a7340f4514e5_4b6af750-d8e2-07f7-b6336105578f2003.jpg"
+    },
+    new 
+    {
+        Id = 4,
+        Name = "Zach Bryan Concert",
+        LocationId = 4,      
+        ActivityTypeId = 4,    
+        StartTime = DateTimeOffset.Parse("2024-01-27T19:00:00+00:00"),
+        EndTime = DateTimeOffset.Parse("2024-01-27T23:00:00+00:00"),
+        ImageUrl = "https://cloudfront-us-east-1.images.arcpublishing.com/pmn/L73ENXS74ZD2DMIWGEOYUGC3WM.jpg"
+    }
+);
+
+modelBuilder.Entity<ActivityTag>().HasData(
+    new { 
+        Id = 1, 
+        ActivityId = 1, 
+        TagId = 1 // Sports
+    },
+    new { 
+        Id = 2, 
+        ActivityId = 1, 
+        TagId = 2 // NFL
+    },
+    new { 
+        Id = 3, 
+        ActivityId = 1, 
+        TagId = 3 // Football
+    },
+    new { 
+        Id = 4, 
+        ActivityId = 2, 
+        TagId = 4 // FoodAndDrink
+    },
+    new { 
+        Id = 5, 
+        ActivityId = 2, 
+        TagId = 5 // Upscale
+    },
+    new { 
+        Id = 6, 
+        ActivityId = 3, 
+        TagId = 6 // History
+    },
+    new { 
+        Id = 7, 
+        ActivityId = 3, 
+        TagId = 7 // Educational
+    },
+    new { 
+        Id = 8, 
+        ActivityId = 3, 
+        TagId = 8 // Military
+    },
+    new { 
+        Id = 9, 
+        ActivityId = 4, 
+        TagId = 9  // Music
+    },
+    new { 
+        Id = 10, 
+        ActivityId = 4, 
+        TagId = 10 // LiveEntertainment
+    }
+);
     }
 
     // DbSet properties

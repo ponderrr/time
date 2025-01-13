@@ -1,13 +1,11 @@
-import { Container, Button, Group } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { showNotification } from "@mantine/notifications";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { routes } from "../../routes";
 import { ApiResponse, ActivityTypeGetDto } from "../../constants/types";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import ActivityTypeCard from "./ActivityTypeCard";
+import { ListingLayout } from "../../components/ListingLayout";
 
 export const ActivityTypesListing = () => {
     const [activityTypes, setActivityTypes] = useState<ActivityTypeGetDto[]>();
@@ -36,30 +34,18 @@ export const ActivityTypesListing = () => {
     };
 
     return (
-        <Container>
-            <Group justify="space-between" mb="xl">
-                <h2 className="text-2xl font-bold">Activity Types</h2>
-                <Button
-                    variant="light"
-                    color="blue"
-                    onClick={() => navigate(routes.activityTypeCreate)}
-                    leftSection={<FontAwesomeIcon icon={faPlus} />}
-                >
-                    New Activity Type
-                </Button>
-            </Group>
-            
-            {activityTypes && (
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {activityTypes.map((activityType) => (
-                        <ActivityTypeCard
-                            key={activityType.id}
-                            activityType={activityType}
-                            onEdit={handleEdit}
-                        />
-                    ))}
+        <ListingLayout 
+            title="Activity Types"
+            onAddClick={() => navigate(routes.activityTypeCreate)}
+        >
+            {activityTypes?.map((activityType) => (
+                <div key={activityType.id} className="flex justify-center w-full">
+                    <ActivityTypeCard
+                        activityType={activityType}
+                        onEdit={handleEdit}
+                    />
                 </div>
-            )}
-        </Container>
+            ))}
+        </ListingLayout>
     );
 };
