@@ -18,6 +18,10 @@ export const LocationsCreate = () => {
         },
         validate: {
             name: (value) => (!value ? "Name is required" : null),
+            city: (value) => (!value ? "City is required" : null),
+            state: (value) => (!value ? "State is required" : null),
+            country: (value) => (!value ? "Country is required" : null),
+            description: (value) => (!value ? "Description is required" : null),
         },
     });
 
@@ -51,33 +55,52 @@ export const LocationsCreate = () => {
             <form onSubmit={form.onSubmit(handleSubmit)}>
                 <TextInput
                     label="Name"
+                    placeholder="Enter location name"
                     {...form.getInputProps("name")}
                     required
                 />
                 <TextInput
                     label="City"
+                    placeholder="Enter city"
                     {...form.getInputProps("city")}
                     mt="md"
+                    required
                 />
                 <TextInput
                     label="State"
+                    placeholder="Enter state"
                     {...form.getInputProps("state")}
                     mt="md"
+                    required
                 />
                 <TextInput
                     label="Country"
+                    placeholder="Enter country"
                     {...form.getInputProps("country")}
                     mt="md"
+                    required
                 />
                 <TextInput
                     label="Description"
+                    placeholder="Enter description"
                     {...form.getInputProps("description")}
                     mt="md"
+                    required
                 />
                 <Space h="md" />
                 <Flex gap="md">
-                    <Button type="submit">Create Location</Button>
-                    <Button variant="light" onClick={() => navigate(routes.locationListing)}>
+                    <Button 
+                        type="submit"
+                        variant="outline"
+                        color="green"
+                    >
+                        Create Location
+                    </Button>
+                    <Button 
+                        variant="outline"
+                        color="red"
+                        onClick={() => navigate(routes.locationListing)}
+                    >
                         Cancel
                     </Button>
                 </Flex>

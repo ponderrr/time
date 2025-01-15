@@ -1,4 +1,4 @@
-import { Card, Group, Text, Badge, Button, Stack } from '@mantine/core';
+import { Card, Group, Text, Badge, Stack, Button } from '@mantine/core';
 import { LocationGetDto } from '../../constants/types';
 
 type LocationCardProps = {
@@ -10,24 +10,24 @@ const LocationCard = ({ location, onEdit }: LocationCardProps) => {
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder className="w-full max-w-[380px]">
       <Stack gap="xs">
-        <Group justify="space-between">
+        <Group justify="space-between" align="start">
           <Text fw={500} size="lg">{location.name}</Text>
           <Badge color="brand" variant="light">
-            {location.state}
+            {location.country}
           </Badge>
         </Group>
 
         <Text size="sm" c="dimmed">
-          {location.city}, {location.country}
+          {location.city}, {location.state}
         </Text>
-        <Text size="sm">{location.description}</Text>
+        
+        <Text size="sm" mt="xs">{location.description}</Text>
 
         <Button
           variant="light"
           color="brand"
           fullWidth
-          mt="md"
-          radius="md"
+          mt="auto"
           onClick={() => onEdit(location.id)}
         >
           Edit Location

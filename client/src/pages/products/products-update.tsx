@@ -24,10 +24,12 @@ export const ProductsUpdate = () => {
         validate: {
             name: (value) => (!value ? "Name is required" : null),
             price: (value) => (value <= 0 ? "Price must be greater than 0" : null),
-            expectedQuantity: (value) => (value < 0 ? "Expected quantity cannot be negative" : null),
-            minQuantity: (value) => (value < 0 ? "Minimum quantity cannot be negative" : null),
-            locationId: (value) => (value <= 0 ? "Location ID must be greater than 0" : null),
+            locationId: (value) => (value <= 0 ? "Location is required" : null),
         },
+        transformValues: (values) => ({
+            ...values,
+            price: Number(values.price.toFixed(2))
+        }),
     });
 
     useEffect(() => {
@@ -35,7 +37,7 @@ export const ProductsUpdate = () => {
         fetchLocationOptions();
     }, [id]);
 
-    const fetchLocationOptions = async () => {
+    async function fetchLocationOptions() {
         try {
             const response = await axios.get<ApiResponse<OptionItemDto[]>>("/api/location/options");
             if (!response.data.hasErrors) {
@@ -47,7 +49,7 @@ export const ProductsUpdate = () => {
                 color: "red"
             });
         }
-    };
+    }
 
     const fetchProduct = async () => {
         const response = await axios.get<ApiResponse<ProductGetDto>>(
@@ -99,6 +101,7 @@ export const ProductsUpdate = () => {
                     {...form.getInputProps("name")}
                     required
                 />
+
                 <Select
                     label="Location"
                     placeholder="Select a location"
@@ -106,18 +109,22 @@ export const ProductsUpdate = () => {
                     value={form.values.locationId.toString()}
                     onChange={(value) => form.setFieldValue('locationId', parseInt(value || '0'))}
                     required
-                    searchable
                     mt="md"
                 />
+
                 <NumberInput
                     label="Price"
                     placeholder="Enter price"
-                    {...form.getInputProps("price")}
                     min={0.01}
+                    step={0.01}
+                    prefix="$"
                     decimalScale={2}
+                    allowNegative={false}
+                    {...form.getInputProps("price")}
                     mt="md"
                     required
                 />
+
                 <NumberInput
                     label="Expected Quantity"
                     placeholder="Enter expected quantity"
@@ -125,6 +132,7 @@ export const ProductsUpdate = () => {
                     min={0}
                     mt="md"
                 />
+
                 <NumberInput
                     label="Minimum Quantity"
                     placeholder="Enter minimum quantity"
@@ -132,16 +140,29 @@ export const ProductsUpdate = () => {
                     min={0}
                     mt="md"
                 />
+
                 <Textarea
                     label="Description"
                     placeholder="Enter product description"
                     {...form.getInputProps("description")}
                     mt="md"
+                    required
                 />
+
                 <Space h="md" />
                 <Flex gap="md">
-                    <Button type="submit">Update Product</Button>
-                    <Button variant="light" onClick={() => navigate(routes.productListing)}>
+                    <Button 
+                        type="submit"
+                        variant="outline"
+                        color="green"
+                    >
+                        Update Product
+                    </Button>
+                    <Button 
+                        variant="outline"
+                        color="red"
+                        onClick={() => navigate(routes.productListing)}
+                    >
                         Cancel
                     </Button>
                 </Flex>

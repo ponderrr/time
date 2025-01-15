@@ -1,13 +1,16 @@
-import { Container, TextInput, NumberInput, Textarea, Button, Space, Flex } from "@mantine/core";
+import { Container, TextInput, NumberInput, Textarea, Button, Space, Flex, Select } from "@mantine/core";
 import { FormErrors, useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { ApiResponse, ProductCreateUpdateDto } from "../../constants/types";
+import { ApiResponse, ProductCreateUpdateDto, OptionItemDto } from "../../constants/types";
 import { routes } from "../../routes";
 
 export const ProductsCreate = () => {
     const navigate = useNavigate();
+    const [locationOptions, setLocationOptions] = useState<OptionItemDto[]>([]);
+    
     const form = useForm<ProductCreateUpdateDto>({
         initialValues: {
             name: "",
@@ -20,11 +23,31 @@ export const ProductsCreate = () => {
         validate: {
             name: (value) => (!value ? "Name is required" : null),
             price: (value) => (value <= 0 ? "Price must be greater than 0" : null),
-            expectedQuantity: (value) => (value < 0 ? "Expected quantity cannot be negative" : null),
-            minQuantity: (value) => (value < 0 ? "Minimum quantity cannot be negative" : null),
-            locationId: (value) => (value <= 0 ? "Location ID must be greater than 0" : null),
+            locationId: (value) => (value <= 0 ? "Location is required" : null),
         },
+        transformValues: (values) => ({
+            ...values,
+            price: Number(values.price.toFixed(2))
+        }),
     });
+
+    useEffect(() => {
+        fetchLocationOptions();
+    }, []);
+
+    async function fetchLocationOptions() {
+        try {
+            const response = await axios.get<ApiResponse<OptionItemDto[]>>("/api/location/options");
+            if (!response.data.hasErrors) {
+                setLocationOptions(response.data.data);
+            }
+        } catch (error) {
+            showNotification({
+                message: "Error fetching locations",
+                color: "red"
+            });
+        }
+    }
 
     const handleSubmit = async (values: ProductCreateUpdateDto) => {
         const response = await axios.post<ApiResponse<ProductCreateUpdateDto>>(
@@ -60,23 +83,30 @@ export const ProductsCreate = () => {
                     {...form.getInputProps("name")}
                     required
                 />
-                <NumberInput
-                    label="Location ID"
-                    placeholder="Enter location ID"
-                    {...form.getInputProps("locationId")}
-                    min={1}
-                    mt="md"
+
+                <Select
+                    label="Location"
+                    placeholder="Select a location"
+                    data={locationOptions}
+                    value={form.values.locationId.toString()}
+                    onChange={(value) => form.setFieldValue('locationId', parseInt(value || '0'))}
                     required
+                    mt="md"
                 />
+
                 <NumberInput
                     label="Price"
                     placeholder="Enter price"
-                    {...form.getInputProps("price")}
                     min={0.01}
+                    step={0.01}
+                    prefix="$"
                     decimalScale={2}
+                    allowNegative={false}
+                    {...form.getInputProps("price")}
                     mt="md"
                     required
                 />
+
                 <NumberInput
                     label="Expected Quantity"
                     placeholder="Enter expected quantity"
@@ -84,6 +114,7 @@ export const ProductsCreate = () => {
                     min={0}
                     mt="md"
                 />
+
                 <NumberInput
                     label="Minimum Quantity"
                     placeholder="Enter minimum quantity"
@@ -91,16 +122,29 @@ export const ProductsCreate = () => {
                     min={0}
                     mt="md"
                 />
+
                 <Textarea
                     label="Description"
                     placeholder="Enter product description"
                     {...form.getInputProps("description")}
                     mt="md"
+                    required
                 />
+
                 <Space h="md" />
                 <Flex gap="md">
-                    <Button type="submit">Create Product</Button>
-                    <Button variant="light" onClick={() => navigate(routes.productListing)}>
+                    <Button 
+                        type="submit"
+                        variant="outline"
+                        color="green"
+                    >
+                        Create Product
+                    </Button>
+                    <Button 
+                        variant="outline"
+                        color="red"
+                        onClick={() => navigate(routes.productListing)}
+                    >
                         Cancel
                     </Button>
                 </Flex>

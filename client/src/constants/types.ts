@@ -12,6 +12,12 @@ export interface OptionItemDto {
     value: string;
 }
 
+// Activity Brief DTO - used for tag relationships
+export interface ActivityBriefDto {
+    id: number;
+    name: string;
+}
+
 // Activity Types
 export interface ActivityGetDto {
     id: number;
@@ -91,6 +97,15 @@ export interface ActivityTypeCreateUpdateDto {
 export interface TagGetDto {
     id: number;
     name: string;
+    activities?: ActivityBriefDto[];
+}
+
+export interface TagCreateDto {
+    name: string;
+}
+
+export interface TagUpdateDto {
+    name: string;
 }
 
 export interface TagCreateUpdateDto {
@@ -100,8 +115,13 @@ export interface TagCreateUpdateDto {
 // Activity Tag Types
 export interface ActivityTagGetDto {
     id: number;
-    activityId: number;
     tagId: number;
+    activityId: number;
+    name: string;
+    activities?: {
+        id: number;
+        name: string;
+    }[];
 }
 
 export interface ActivityTagCreateUpdateDto {

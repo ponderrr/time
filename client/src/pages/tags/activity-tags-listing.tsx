@@ -1,113 +1,63 @@
-// import { Container, Button, Group, Box } from "@mantine/core";
-// import { useEffect, useState } from "react";
-// import { showNotification } from "@mantine/notifications";
-// import axios from "axios";
-// import { useNavigate } from "react-router-dom";
-// import { routes } from "../../routes";
-// import { ApiResponse, ActivityTagGetDto } from "../../constants/types";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faPlus } from "@fortawesome/free-solid-svg-icons";
-// import ActivityTagCard from "./ActivityTagCard";
-
-// export const ActivityTagsListing = () => {
-//     const [activityTags, setActivityTags] = useState<ActivityTagGetDto[]>();
-//     const navigate = useNavigate();
-
-//     useEffect(() => {
-//         fetchActivityTags();
-//     }, []);
-
-//     async function fetchActivityTags() {
-//         const response = await axios.get<ApiResponse<ActivityTagGetDto[]>>(
-//             "/api/activitytag"
-//         );
-
-//         if (response.data.hasErrors) {
-//             showNotification({ message: "Error fetching activity tags." });
-//         }
-
-//         if (response.data.data) {
-//             setActivityTags(response.data.data);
-//         }
-//     }
-
-//     const handleEdit = (id: number) => {
-//         navigate(routes.activityTagUpdate.replace(":id", `${id}`));
-//     };
-
-//     return (
-//         <Container size="lg">
-//             <Group justify="space-between" mb="xl">
-//                 <h2 className="text-2xl font-bold">Activity Tags</h2>
-//                 <Button
-//                     variant="light"
-//                     color="brand"
-//                     onClick={() => navigate(routes.activityTagCreate)}
-//                     leftSection={<FontAwesomeIcon icon={faPlus} />}
-//                 >
-//                     New Activity Tag
-//                 </Button>
-//             </Group>
-            
-//             <Box mx="auto" style={{ maxWidth: '1200px' }}>
-//                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 justify-items-center">
-//                     {activityTags?.map((activityTag) => (
-//                         <ActivityTagCard
-//                             key={activityTag.id}
-//                             activityTag={activityTag}
-//                             onEdit={handleEdit}
-//                         />
-//                     ))}
-//                 </div>
-//             </Box>
-//         </Container>
-//     );
-// };
-
 import { useEffect, useState } from "react";
 import { showNotification } from "@mantine/notifications";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { routes } from "../../routes";
-import { ApiResponse, ActivityTagGetDto } from "../../constants/types";
-import ActivityTagCard from "./ActivityTagCard";
+import { ApiResponse, TagGetDto } from "../../constants/types";
 import { ListingLayout } from "../../components/ListingLayout";
+import ActivityTagCard from "./ActivityTagCard";
 
 export const ActivityTagsListing = () => {
-    const [activityTags, setActivityTags] = useState<ActivityTagGetDto[]>();
+    const [tags, setTags] = useState<TagGetDto[]>([]);
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchActivityTags();
+        fetchTags();
     }, []);
 
-    async function fetchActivityTags() {
-        const response = await axios.get<ApiResponse<ActivityTagGetDto[]>>(
-            "/api/activitytag"
-        );
+    const fetchTags = async () => {
+        try {
+            const response = await axios.get<ApiResponse<TagGetDto[]>>("/api/tag");
+            
+            if (response.data.hasErrors) {
+                showNotification({ 
+                    message: "Error fetching tags", 
+                    color: "red" 
+                });
+                return;
+            }
 
-        if (response.data.hasErrors) {
-            showNotification({ message: "Error fetching activity tags." });
+            if (response.data.data) {
+                console.log('Fetched tags:', response.data.data); // Debug log
+                setTags(response.data.data);
+            }
+        } catch (error) {
+            console.error('Error fetching tags:', error);
+            showNotification({ 
+                message: "Failed to fetch tags", 
+                color: "red" 
+            });
         }
-
-        if (response.data.data) {
-            setActivityTags(response.data.data);
-        }
-    }
+    };
 
     const handleEdit = (id: number) => {
         navigate(routes.activityTagUpdate.replace(":id", `${id}`));
     };
 
+    // Add error boundary for debugging
+    if (!tags) {
+        return <div>No tags available</div>;
+    }
+
     return (
         <ListingLayout 
-            title="Activity Tags"
+            title="Tags"
             onAddClick={() => navigate(routes.activityTagCreate)}
         >
-            {activityTags?.map((activityTag) => (
-                <div key={activityTag.id} className="flex justify-center w-full">
+            {tags.map((tag) => (
+                <div key={tag.id} className="flex justify-center w-full">
                     <ActivityTagCard
-                        activityTag={activityTag}
+                        tag={tag}
                         onEdit={handleEdit}
                     />
                 </div>

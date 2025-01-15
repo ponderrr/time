@@ -75,8 +75,18 @@ export const ActivityTypesUpdate = () => {
                 />
                 <Space h="md" />
                 <Flex gap="md">
-                    <Button type="submit">Update Activity Type</Button>
-                    <Button variant="light" onClick={() => navigate(routes.activityTypeListing)}>
+                    <Button 
+                        type="submit"
+                        variant="outline"
+                        color="green"
+                    >
+                        Update Activity Type
+                    </Button>
+                    <Button 
+                        variant="outline"
+                        color="red"
+                        onClick={() => navigate(routes.activityTypeListing)}
+                    >
                         Cancel
                     </Button>
                 </Flex>

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using LearningStarter.Common;
-using System.Collections.Generic;
 
 namespace LearningStarter.Controllers;
 
@@ -26,10 +25,17 @@ public class TagController : ControllerBase
         
         var data = _dataContext
             .Set<Tag>()
+            .Include(t => t.ActivityTags)
+                .ThenInclude(at => at.Activity)
             .Select(tag => new TagGetDto
             {
                 Id = tag.Id,
-                Name = tag.Name
+                Name = tag.Name,
+                Activities = tag.ActivityTags.Select(at => new ActivityBriefDto 
+                {
+                    Id = at.Activity.Id,
+                    Name = at.Activity.Name
+                }).ToList()
             })
             .ToList();
         
@@ -44,10 +50,17 @@ public class TagController : ControllerBase
         
         var data = _dataContext
             .Set<Tag>()
+            .Include(t => t.ActivityTags)
+                .ThenInclude(at => at.Activity)
             .Select(tag => new TagGetDto
             {
                 Id = tag.Id,
-                Name = tag.Name
+                Name = tag.Name,
+                Activities = tag.ActivityTags.Select(at => new ActivityBriefDto 
+                {
+                    Id = at.Activity.Id,
+                    Name = at.Activity.Name
+                }).ToList()
             })
             .FirstOrDefault(tag => tag.Id == id);
         
@@ -78,7 +91,7 @@ public class TagController : ControllerBase
         response.Data = data;
         return Ok(response);
     }
-    
+
     [HttpPost]
     public IActionResult Create([FromBody] TagCreateDto createDto)
     {
@@ -87,17 +100,13 @@ public class TagController : ControllerBase
         if (string.IsNullOrEmpty(createDto.Name))
         {
             response.AddError(nameof(createDto.Name), "Name must not be empty");
-        }
-
-        if (response.HasErrors)
-        {
             return BadRequest(response);
         }
 
         var tagToCreate = new Tag
         {
             Name = createDto.Name,
-            ActivityTags = new List<ActivityTag>()  // Initialize required property
+            ActivityTags = new List<ActivityTag>()
         };
         
         _dataContext.Set<Tag>().Add(tagToCreate);
@@ -106,7 +115,8 @@ public class TagController : ControllerBase
         var tagToReturn = new TagGetDto
         {
             Id = tagToCreate.Id,
-            Name = tagToCreate.Name
+            Name = tagToCreate.Name,
+            Activities = new List<ActivityBriefDto>()
         };
         
         response.Data = tagToReturn;
@@ -121,15 +131,11 @@ public class TagController : ControllerBase
         if (string.IsNullOrEmpty(updateDto.Name))
         {
             response.AddError(nameof(updateDto.Name), "Name must not be empty");
-        }
-
-        if (response.HasErrors)
-        {
             return BadRequest(response);
         }
 
         var tagToUpdate = _dataContext.Set<Tag>()
-            .Include(t => t.ActivityTags)  // Include related entity
+            .Include(t => t.ActivityTags)
             .FirstOrDefault(tag => tag.Id == id);
         
         if (tagToUpdate == null)
@@ -139,13 +145,17 @@ public class TagController : ControllerBase
         }
 
         tagToUpdate.Name = updateDto.Name;
-
         _dataContext.SaveChanges();
 
         var tagToReturn = new TagGetDto
         {
             Id = tagToUpdate.Id,
-            Name = tagToUpdate.Name
+            Name = tagToUpdate.Name,
+            Activities = tagToUpdate.ActivityTags.Select(at => new ActivityBriefDto 
+            {
+                Id = at.Activity.Id,
+                Name = at.Activity.Name
+            }).ToList()
         };
         
         response.Data = tagToReturn;
@@ -158,7 +168,6 @@ public class TagController : ControllerBase
         var response = new Response();
         
         var tagToDelete = _dataContext.Set<Tag>()
-            .Include(t => t.ActivityTags)  // Include related entity
             .FirstOrDefault(tag => tag.Id == id);
 
         if (tagToDelete == null)

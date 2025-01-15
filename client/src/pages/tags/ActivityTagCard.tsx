@@ -1,71 +1,47 @@
-// import { Card, Group, Text, Button, Badge, Stack } from '@mantine/core';
-// import { ActivityTagGetDto } from '../../constants/types';
-
-// type ActivityTagCardProps = {
-//   activityTag: ActivityTagGetDto;
-//   onEdit: (id: number) => void;
-// };
-
-// const ActivityTagCard = ({ activityTag, onEdit }: ActivityTagCardProps) => {
-//   return (
-//     <Card shadow="sm" padding="lg" radius="md" withBorder w="100%" maw={350}>
-//       <Stack gap="md">
-//         <Group justify="space-between">
-//           <Text fw={500} size="lg">Activity Tag #{activityTag.id}</Text>
-//           <Badge color="brand" variant="light">
-//             Activity #{activityTag.activityId}
-//           </Badge>
-//         </Group>
-
-//         <Text size="sm" c="dimmed">
-//           Tag ID: {activityTag.tagId}
-//         </Text>
-
-//         <Button
-//           variant="light"
-//           color="brand"
-//           fullWidth
-//           onClick={() => onEdit(activityTag.id)}
-//         >
-//           Edit Activity Tag
-//         </Button>
-//       </Stack>
-//     </Card>
-//   );
-// };
-
-// export default ActivityTagCard;
-
 import { Card, Group, Text, Badge, Stack, Button } from '@mantine/core';
-import { ActivityTagGetDto } from '../../constants/types';
+import { TagGetDto } from '../../constants/types';
 
 type ActivityTagCardProps = {
-  activityTag: ActivityTagGetDto;
+  tag: TagGetDto;
   onEdit: (id: number) => void;
 };
 
-const ActivityTagCard = ({ activityTag, onEdit }: ActivityTagCardProps) => {
+const ActivityTagCard = ({ tag, onEdit }: ActivityTagCardProps) => {
+  if (!tag) {
+    return null;
+  }
+
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder className="w-full max-w-[380px]">
-      <Stack gap="md">
-        <Group justify="space-between">
-          <Text fw={500} size="lg">Activity Tag #{activityTag.id}</Text>
-          <Badge color="brand" variant="light">
-            Activity #{activityTag.activityId}
-          </Badge>
-        </Group>
+      <Stack gap="xs">
+        <Text fw={500} size="lg">{tag.name || 'Unnamed Tag'}</Text>
 
-        <Text size="sm" c="dimmed">
-          Tag ID: {activityTag.tagId}
-        </Text>
+        <Text size="sm" c="dimmed">Used in Activities:</Text>
+        <div className="flex flex-wrap gap-2">
+          {tag.activities && tag.activities.length > 0 ? (
+            tag.activities.map(activity => (
+              <Badge 
+                key={activity.id}
+                color="brand"
+                variant="light"
+                className="text-sm"
+              >
+                {activity.name}
+              </Badge>
+            ))
+          ) : (
+            <Text size="sm" c="dimmed" fs="italic">Not used in any activities</Text>
+          )}
+        </div>
 
         <Button
           variant="light"
           color="brand"
           fullWidth
-          onClick={() => onEdit(activityTag.id)}
+          mt="auto"
+          onClick={() => onEdit(tag.id)}
         >
-          Edit Activity Tag
+          Edit Tag
         </Button>
       </Stack>
     </Card>

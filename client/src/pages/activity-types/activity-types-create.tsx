@@ -53,11 +53,21 @@ export const ActivityTypesCreate = () => {
                 />
                 <Space h="md" />
                 <Flex gap="md">
-    <Button type="submit">Create Activity Type</Button>
-    <Button variant="filled" color="red" onClick={() => navigate(routes.activityTypeListing)}>
-        Cancel
-    </Button>
-</Flex>
+                    <Button 
+                        type="submit"
+                        variant="outline"
+                        color="green"
+                    >
+                        Create Activity Type
+                    </Button>
+                    <Button 
+                        variant="outline"
+                        color="red"
+                        onClick={() => navigate(routes.activityTypeListing)}
+                    >
+                        Cancel
+                    </Button>
+                </Flex>
             </form>
         </Container>
     );

@@ -16,6 +16,8 @@ public class TagGetDto
 {
     public int Id { get; set; }
     public required string Name { get; set; }
+
+    public List<ActivityBriefDto> Activities { get; set; } = new();
 }
 
 public class TagCreateDto

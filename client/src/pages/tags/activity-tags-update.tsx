@@ -1,93 +1,108 @@
-import { Container, NumberInput, Button, Space, Flex } from "@mantine/core";
+import { Container, TextInput, Button, Space, Flex } from "@mantine/core";
 import { FormErrors, useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { ApiResponse, ActivityTagCreateUpdateDto, ActivityTagGetDto } from "../../constants/types";
+import { ApiResponse, TagUpdateDto, TagGetDto } from "../../constants/types";
 import { routes } from "../../routes";
+
+interface UpdateTagForm {
+    name: string;
+}
 
 export const ActivityTagsUpdate = () => {
     const navigate = useNavigate();
     const { id } = useParams();
-    const form = useForm<ActivityTagCreateUpdateDto>({
+    
+    const form = useForm<UpdateTagForm>({
         initialValues: {
-            activityId: 0,
-            tagId: 0,
+            name: "",
         },
         validate: {
-            activityId: (value) => (value <= 0 ? "Activity ID must be greater than 0" : null),
-            tagId: (value) => (value <= 0 ? "Tag ID must be greater than 0" : null),
+            name: (value) => (!value ? "Name is required" : null),
         },
     });
 
     useEffect(() => {
-        fetchActivityTag();
+        fetchTag();
     }, [id]);
 
-    const fetchActivityTag = async () => {
-        const response = await axios.get<ApiResponse<ActivityTagGetDto>>(
-            `/api/activitytag/${id}`
+    const fetchTag = async () => {
+        const response = await axios.get<ApiResponse<TagGetDto>>(
+            `/api/tag/${id}`
         );
 
         if (response.data.hasErrors) {
             showNotification({
-                message: "Error fetching activity tag",
+                message: "Error fetching tag",
                 color: "red",
             });
             return;
         }
 
-        form.setValues(response.data.data);
+        form.setValues({
+            name: response.data.data.name
+        });
     };
 
-    const handleSubmit = async (values: ActivityTagCreateUpdateDto) => {
-        const response = await axios.put<ApiResponse<ActivityTagCreateUpdateDto>>(
-            `/api/activitytag/${id}`,
-            values
-        );
+    const handleSubmit = async (values: UpdateTagForm) => {
+        try {
+            const submitData: TagUpdateDto = {
+                name: values.name
+            };
 
-        if (response.data.hasErrors) {
-            const formErrors: FormErrors = response.data.errors.reduce(
-                (prev, curr) => {
-                    Object.assign(prev, { [curr.property]: curr.message });
-                    return prev;
-                },
-                {} as FormErrors
+            const response = await axios.put<ApiResponse<TagUpdateDto>>(
+                `/api/tag/${id}`,
+                submitData
             );
-            form.setErrors(formErrors);
-            return;
-        }
 
-        showNotification({
-            message: "Activity tag updated successfully",
-            color: "green",
-        });
-        navigate(routes.activityTagListing);
+            if (response.data.hasErrors) {
+                const formErrors: FormErrors = {};
+                response.data.errors.forEach(error => {
+                    formErrors[error.property] = error.message;
+                });
+                form.setErrors(formErrors);
+                return;
+            }
+
+            showNotification({
+                message: "Tag updated successfully",
+                color: "green",
+            });
+            navigate(routes.activityTagListing);
+        } catch (error) {
+            showNotification({
+                message: "Error updating tag",
+                color: "red",
+            });
+        }
     };
 
     return (
         <Container>
             <form onSubmit={form.onSubmit(handleSubmit)}>
-                <NumberInput
-                    label="Activity ID"
-                    placeholder="Enter activity ID"
-                    {...form.getInputProps("activityId")}
-                    min={1}
+                <TextInput
+                    label="Tag Name"
+                    placeholder="Enter tag name"
+                    {...form.getInputProps("name")}
                     required
                 />
-                <NumberInput
-                    label="Tag ID"
-                    placeholder="Enter tag ID"
-                    {...form.getInputProps("tagId")}
-                    min={1}
-                    mt="md"
-                    required
-                />
+
                 <Space h="md" />
                 <Flex gap="md">
-                    <Button type="submit">Update Activity Tag</Button>
-                    <Button variant="light" onClick={() => navigate(routes.activityTagListing)}>
+                    <Button 
+                        type="submit"
+                        variant="outline"
+                        color="green"
+                    >
+                        Update Tag
+                    </Button>
+                    <Button 
+                        variant="outline"
+                        color="red"
+                        onClick={() => navigate(routes.activityTagListing)}
+                    >
                         Cancel
                     </Button>
                 </Flex>
