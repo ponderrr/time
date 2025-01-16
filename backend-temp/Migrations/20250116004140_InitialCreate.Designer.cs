@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LearningStarter.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250107221447_UpdatedSeedingAndRequiredFields")]
-    partial class UpdatedSeedingAndRequiredFields
+    [Migration("20250116004140_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,78 @@ namespace LearningStarter.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("ActivityProduct", b =>
+                {
+                    b.Property<int>("ActivitiesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ActivitiesId", "ProductsId");
+
+                    b.HasIndex("ProductsId");
+
+                    b.ToTable("ActivityProduct", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            ActivitiesId = 1,
+                            ProductsId = 1
+                        },
+                        new
+                        {
+                            ActivitiesId = 1,
+                            ProductsId = 2
+                        },
+                        new
+                        {
+                            ActivitiesId = 1,
+                            ProductsId = 3
+                        },
+                        new
+                        {
+                            ActivitiesId = 2,
+                            ProductsId = 4
+                        },
+                        new
+                        {
+                            ActivitiesId = 2,
+                            ProductsId = 5
+                        },
+                        new
+                        {
+                            ActivitiesId = 3,
+                            ProductsId = 6
+                        },
+                        new
+                        {
+                            ActivitiesId = 3,
+                            ProductsId = 7
+                        },
+                        new
+                        {
+                            ActivitiesId = 3,
+                            ProductsId = 8
+                        },
+                        new
+                        {
+                            ActivitiesId = 4,
+                            ProductsId = 9
+                        },
+                        new
+                        {
+                            ActivitiesId = 4,
+                            ProductsId = 10
+                        },
+                        new
+                        {
+                            ActivitiesId = 4,
+                            ProductsId = 11
+                        });
+                });
 
             modelBuilder.Entity("LearningStarter.Entities.Activity", b =>
                 {
@@ -40,7 +112,6 @@ namespace LearningStarter.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("ImageUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("LocationId")
@@ -60,6 +131,48 @@ namespace LearningStarter.Migrations
                     b.HasIndex("LocationId");
 
                     b.ToTable("Activity", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ActivityTypeId = 1,
+                            EndTime = new DateTimeOffset(new DateTime(2024, 1, 20, 16, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            ImageUrl = "https://thespun.com/.image/t_share/MTgzMTI4NjUzOTY5NjMwNjI3/divisional-round---philadelphia-eagles-v-new-orleans-saints.jpg",
+                            LocationId = 1,
+                            Name = "New Orleans Saints Game",
+                            StartTime = new DateTimeOffset(new DateTime(2024, 1, 20, 13, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ActivityTypeId = 2,
+                            EndTime = new DateTimeOffset(new DateTime(2024, 1, 14, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            ImageUrl = "https://resizer.otstatic.com/v2/photos/wide-huge/3/68484709.jpg",
+                            LocationId = 2,
+                            Name = "Dinner at Restaurant August",
+                            StartTime = new DateTimeOffset(new DateTime(2024, 1, 14, 18, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ActivityTypeId = 3,
+                            EndTime = new DateTimeOffset(new DateTime(2024, 1, 16, 17, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            ImageUrl = "https://assets.simpleviewinc.com/simpleview/image/upload/crm/neworleans/_MG_7836_4B6A886E-0980-8656-351CA87266FB87CF-4b6a7340f4514e5_4b6af750-d8e2-07f7-b6336105578f2003.jpg",
+                            LocationId = 3,
+                            Name = "World War 2 Museum Experience",
+                            StartTime = new DateTimeOffset(new DateTime(2024, 1, 16, 9, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ActivityTypeId = 4,
+                            EndTime = new DateTimeOffset(new DateTime(2024, 1, 27, 23, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            ImageUrl = "https://cloudfront-us-east-1.images.arcpublishing.com/pmn/L73ENXS74ZD2DMIWGEOYUGC3WM.jpg",
+                            LocationId = 4,
+                            Name = "Zach Bryan Concert",
+                            StartTime = new DateTimeOffset(new DateTime(2024, 1, 27, 19, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                        });
                 });
 
             modelBuilder.Entity("LearningStarter.Entities.ActivityTag", b =>
@@ -83,6 +196,68 @@ namespace LearningStarter.Migrations
                     b.HasIndex("TagId");
 
                     b.ToTable("ActivityTag", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ActivityId = 1,
+                            TagId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ActivityId = 1,
+                            TagId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ActivityId = 1,
+                            TagId = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ActivityId = 2,
+                            TagId = 4
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ActivityId = 2,
+                            TagId = 5
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ActivityId = 3,
+                            TagId = 6
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ActivityId = 3,
+                            TagId = 7
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ActivityId = 3,
+                            TagId = 8
+                        },
+                        new
+                        {
+                            Id = 9,
+                            ActivityId = 4,
+                            TagId = 9
+                        },
+                        new
+                        {
+                            Id = 10,
+                            ActivityId = 4,
+                            TagId = 10
+                        });
                 });
 
             modelBuilder.Entity("LearningStarter.Entities.ActivityType", b =>
@@ -203,9 +378,6 @@ namespace LearningStarter.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ActivityId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -228,8 +400,6 @@ namespace LearningStarter.Migrations
                         .HasColumnType("decimal(10,2)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ActivityId");
 
                     b.HasIndex("LocationId");
 
@@ -372,6 +542,26 @@ namespace LearningStarter.Migrations
                     b.ToTable("Review", (string)null);
                 });
 
+            modelBuilder.Entity("LearningStarter.Entities.RevokedToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("RevokedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RevokedTokens");
+                });
+
             modelBuilder.Entity("LearningStarter.Entities.Tag", b =>
                 {
                     b.Property<int>("Id")
@@ -480,10 +670,10 @@ namespace LearningStarter.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 1, 7, 22, 14, 47, 362, DateTimeKind.Utc).AddTicks(4346),
+                            CreatedAt = new DateTime(2025, 1, 16, 0, 41, 39, 854, DateTimeKind.Utc).AddTicks(9255),
                             IsAdmin = true,
-                            Password = "$2a$11$aNA1yjHiRR6w6zMG/TTCcuiIWRWTaTmAZxN9LZZZ7DZkvPPC9gXgu",
-                            Username = "admin"
+                            Password = "$2a$11$NXAU8q/o0HxfWN4Z138./eTHnZqUtlf0r3x0g0F7XBVCCm/6IAfXq",
+                            Username = "andrew.ponder"
                         });
                 });
 
@@ -507,6 +697,21 @@ namespace LearningStarter.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UserActivity", (string)null);
+                });
+
+            modelBuilder.Entity("ActivityProduct", b =>
+                {
+                    b.HasOne("LearningStarter.Entities.Activity", null)
+                        .WithMany()
+                        .HasForeignKey("ActivitiesId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("LearningStarter.Entities.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductsId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("LearningStarter.Entities.Activity", b =>
@@ -549,10 +754,6 @@ namespace LearningStarter.Migrations
 
             modelBuilder.Entity("LearningStarter.Entities.Product", b =>
                 {
-                    b.HasOne("LearningStarter.Entities.Activity", null)
-                        .WithMany("Products")
-                        .HasForeignKey("ActivityId");
-
                     b.HasOne("LearningStarter.Entities.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId")
@@ -565,8 +766,6 @@ namespace LearningStarter.Migrations
             modelBuilder.Entity("LearningStarter.Entities.Activity", b =>
                 {
                     b.Navigation("ActivityTags");
-
-                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("LearningStarter.Entities.Tag", b =>

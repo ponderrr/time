@@ -15,6 +15,8 @@ public class Product
     public required string Description { get; set; }
     
     public required Location Location { get; set; }
+
+    public List<Activity> Activities { get; set; } = new();
 }
 
 public class ProductSummaryDto

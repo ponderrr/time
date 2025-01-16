@@ -16,6 +16,9 @@ export interface OptionItemDto {
 export interface ActivityBriefDto {
     id: number;
     name: string;
+    city: string;
+    state: string;
+    startTime: string;
 }
 
 // Activity Types

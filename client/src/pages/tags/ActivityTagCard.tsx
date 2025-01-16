@@ -1,4 +1,4 @@
-import { Card, Group, Text, Badge, Stack, Button } from '@mantine/core';
+import { Card, Text, Badge, Stack, Button, Group } from '@mantine/core';
 import { TagGetDto } from '../../constants/types';
 
 type ActivityTagCardProps = {
@@ -7,27 +7,38 @@ type ActivityTagCardProps = {
 };
 
 const ActivityTagCard = ({ tag, onEdit }: ActivityTagCardProps) => {
-  if (!tag) {
-    return null;
-  }
+  if (!tag) return null;
 
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder className="w-full max-w-[380px]">
+    <Card shadow="sm" padding="lg" radius="md" withBorder className="w-full h-full">
       <Stack gap="xs">
-        <Text fw={500} size="lg">{tag.name || 'Unnamed Tag'}</Text>
+        <Text fw={500} size="lg">{tag.name}</Text>
 
         <Text size="sm" c="dimmed">Used in Activities:</Text>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col gap-2">
           {tag.activities && tag.activities.length > 0 ? (
             tag.activities.map(activity => (
-              <Badge 
+              <Card 
                 key={activity.id}
-                color="brand"
-                variant="light"
-                className="text-sm"
+                padding="xs"
+                radius="md"
+                withBorder
+                className="bg-[#2C2E33] hover:bg-[#373A40] transition-colors duration-200"
               >
-                {activity.name}
-              </Badge>
+                <Stack gap={2}>
+                  <Group justify="space-between" align="center">
+                    <Text size="sm" fw={500} className="text-white">
+                      {activity.name}
+                    </Text>
+                  </Group>
+                  <Text size="xs" c="dimmed">
+                    {`${activity.city}, ${activity.state}`}
+                  </Text>
+                  <Text size="xs" c="dimmed" className="italic">
+                    {new Date(activity.startTime).toLocaleString()}
+                  </Text>
+                </Stack>
+              </Card>
             ))
           ) : (
             <Text size="sm" c="dimmed" fs="italic">Not used in any activities</Text>

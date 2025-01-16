@@ -53,7 +53,9 @@ function App() {
                 </AppShell.Header>
 
                 <AppShell.Main 
-                  className={colorScheme === 'dark' ? 'bg-[#1A1B1E]' : 'bg-[#F5F5DC]'}
+                  className={`w-full min-h-screen ${
+                  colorScheme === 'dark' ? 'bg-[#1A1B1E]' : 'bg-[#F5F5DC]'
+                  }`}
                 >
                   <ActionIcon
                     variant="default"
@@ -69,8 +71,8 @@ function App() {
                     )}
                   </ActionIcon>
                   
-                  <Box className="flex justify-center">
-                    <Box className="w-full max-w-7xl px-4">
+                  <Box className="w-full">
+                    <Box className="w-full">
                       <Routes>
                         <Route path={routes.activityListing} element={<ActivitiesListing />} />
                         <Route path={routes.activityCreate} element={<ActivitiesCreate />} />

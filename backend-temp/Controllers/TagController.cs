@@ -34,7 +34,10 @@ public class TagController : ControllerBase
                 Activities = tag.ActivityTags.Select(at => new ActivityBriefDto 
                 {
                     Id = at.Activity.Id,
-                    Name = at.Activity.Name
+                    Name = at.Activity.Name,
+                    City = at.Activity.Location.City,
+                    State = at.Activity.Location.State,
+                    StartTime = at.Activity.StartTime
                 }).ToList()
             })
             .ToList();
@@ -59,7 +62,10 @@ public class TagController : ControllerBase
                 Activities = tag.ActivityTags.Select(at => new ActivityBriefDto 
                 {
                     Id = at.Activity.Id,
-                    Name = at.Activity.Name
+                    Name = at.Activity.Name,
+                    City = at.Activity.Location.City,
+                    State = at.Activity.Location.State,
+                    StartTime = at.Activity.StartTime
                 }).ToList()
             })
             .FirstOrDefault(tag => tag.Id == id);
@@ -154,7 +160,10 @@ public class TagController : ControllerBase
             Activities = tagToUpdate.ActivityTags.Select(at => new ActivityBriefDto 
             {
                 Id = at.Activity.Id,
-                Name = at.Activity.Name
+                Name = at.Activity.Name,
+                City = at.Activity.Location.City,
+                State = at.Activity.Location.State,
+                StartTime = at.Activity.StartTime
             }).ToList()
         };
         

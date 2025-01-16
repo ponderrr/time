@@ -22,6 +22,78 @@ namespace LearningStarter.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("ActivityProduct", b =>
+                {
+                    b.Property<int>("ActivitiesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ActivitiesId", "ProductsId");
+
+                    b.HasIndex("ProductsId");
+
+                    b.ToTable("ActivityProduct", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            ActivitiesId = 1,
+                            ProductsId = 1
+                        },
+                        new
+                        {
+                            ActivitiesId = 1,
+                            ProductsId = 2
+                        },
+                        new
+                        {
+                            ActivitiesId = 1,
+                            ProductsId = 3
+                        },
+                        new
+                        {
+                            ActivitiesId = 2,
+                            ProductsId = 4
+                        },
+                        new
+                        {
+                            ActivitiesId = 2,
+                            ProductsId = 5
+                        },
+                        new
+                        {
+                            ActivitiesId = 3,
+                            ProductsId = 6
+                        },
+                        new
+                        {
+                            ActivitiesId = 3,
+                            ProductsId = 7
+                        },
+                        new
+                        {
+                            ActivitiesId = 3,
+                            ProductsId = 8
+                        },
+                        new
+                        {
+                            ActivitiesId = 4,
+                            ProductsId = 9
+                        },
+                        new
+                        {
+                            ActivitiesId = 4,
+                            ProductsId = 10
+                        },
+                        new
+                        {
+                            ActivitiesId = 4,
+                            ProductsId = 11
+                        });
+                });
+
             modelBuilder.Entity("LearningStarter.Entities.Activity", b =>
                 {
                     b.Property<int>("Id")
@@ -303,9 +375,6 @@ namespace LearningStarter.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ActivityId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -328,8 +397,6 @@ namespace LearningStarter.Migrations
                         .HasColumnType("decimal(10,2)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ActivityId");
 
                     b.HasIndex("LocationId");
 
@@ -600,9 +667,9 @@ namespace LearningStarter.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 1, 13, 20, 49, 57, 526, DateTimeKind.Utc).AddTicks(5757),
+                            CreatedAt = new DateTime(2025, 1, 16, 0, 41, 39, 854, DateTimeKind.Utc).AddTicks(9255),
                             IsAdmin = true,
-                            Password = "$2a$11$Jd9eO9WpzgjKCyg.6NCBNO.J/XsrnMDrqOwtQ2XMaqk2Nf1bzILyy",
+                            Password = "$2a$11$NXAU8q/o0HxfWN4Z138./eTHnZqUtlf0r3x0g0F7XBVCCm/6IAfXq",
                             Username = "andrew.ponder"
                         });
                 });
@@ -627,6 +694,21 @@ namespace LearningStarter.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UserActivity", (string)null);
+                });
+
+            modelBuilder.Entity("ActivityProduct", b =>
+                {
+                    b.HasOne("LearningStarter.Entities.Activity", null)
+                        .WithMany()
+                        .HasForeignKey("ActivitiesId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("LearningStarter.Entities.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductsId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("LearningStarter.Entities.Activity", b =>
@@ -669,10 +751,6 @@ namespace LearningStarter.Migrations
 
             modelBuilder.Entity("LearningStarter.Entities.Product", b =>
                 {
-                    b.HasOne("LearningStarter.Entities.Activity", null)
-                        .WithMany("Products")
-                        .HasForeignKey("ActivityId");
-
                     b.HasOne("LearningStarter.Entities.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId")
@@ -685,8 +763,6 @@ namespace LearningStarter.Migrations
             modelBuilder.Entity("LearningStarter.Entities.Activity", b =>
                 {
                     b.Navigation("ActivityTags");
-
-                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("LearningStarter.Entities.Tag", b =>
