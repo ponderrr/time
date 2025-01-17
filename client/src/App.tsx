@@ -51,26 +51,8 @@ function App() {
                 <AppShell.Header>
                   <Navigation />
                 </AppShell.Header>
-
-                <AppShell.Main 
-                  className={`w-full min-h-screen ${
-                  colorScheme === 'dark' ? 'bg-[#1A1B1E]' : 'bg-[#F5F5DC]'
-                  }`}
-                >
-                  <ActionIcon
-                    variant="default"
-                    size="lg"
-                    onClick={toggleColorScheme}
-                    aria-label="Toggle color scheme"
-                    className="fixed bottom-5 right-5 z-50 focus:outline-none"
-                  >
-                    {colorScheme === 'dark' ? (
-                      <IconSun className="w-5 h-5" />
-                    ) : (
-                      <IconMoonStars className="w-5 h-5" />
-                    )}
-                  </ActionIcon>
-                  
+              
+              <AppShell.Main className="bg-[#1A1B1E]">
                   <Box className="w-full">
                     <Box className="w-full">
                       <Routes>

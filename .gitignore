@@ -78,3 +78,7 @@ time.sln.DotSettings.user
 .env.local
 .env.*
 !.env.example
+
+# Screenshots (ignore everything except PNG)
+screenshots/*
+!screenshots/*.png
