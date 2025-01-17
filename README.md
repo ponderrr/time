@@ -25,7 +25,7 @@ This admin portal was developed as part of a collaborative travel platform proje
 ![Create Activity](/screenshots/activity-create.png)
 *Create Activity Form - Comprehensive activity creation interface*
 
-![Update Activity](/screenshots/activity-update.png)
+![Update Activity](/screenshots/activities-update.png)
 *Update Activity Form - Activity modification interface*
 
 ## Features
