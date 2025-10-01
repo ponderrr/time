@@ -3,17 +3,23 @@ import { showNotification } from "@mantine/notifications";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { routes } from "../../routes";
-import { ApiResponse, ActivityGetDto } from "../../constants/types";
+import { ApiResponse, ActivityGetDto, PagedResult } from "../../constants/types";
 import ActivityCard from "./ActivityCard";
 import { ListingLayout } from "../../components/ListingLayout";
 import { ConfirmationModal } from "../../components/ConfirmationModal";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { CardSkeleton } from "../../components/CardSkeleton";
 import { showErrorNotification, showSuccessNotification } from "../../utils/errorHandler";
+import { Pagination } from "../../components/Pagination";
+import { SearchInput } from "../../components/SearchInput";
+import { Stack } from "@mantine/core";
 
 export const ActivitiesListing = () => {
-    const [activities, setActivities] = useState<ActivityGetDto[]>();
+    const [pagedData, setPagedData] = useState<PagedResult<ActivityGetDto> | null>(null);
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [searchTerm, setSearchTerm] = useState('');
     const [deleteModal, setDeleteModal] = useState<{ opened: boolean; id: number | null; name: string }>({
         opened: false,
         id: null,
@@ -24,12 +30,18 @@ export const ActivitiesListing = () => {
 
     useEffect(() => {
         fetchActivities();
-    }, []);
+    }, [currentPage, pageSize, searchTerm]);
 
     async function fetchActivities() {
         setLoading(true);
         try {
-            const response = await axios.get<ApiResponse<ActivityGetDto[]>>("/api/activity");
+            const params = new URLSearchParams({
+                page: currentPage.toString(),
+                pageSize: pageSize.toString(),
+                ...(searchTerm && { search: searchTerm })
+            });
+
+            const response = await axios.get<ApiResponse<PagedResult<ActivityGetDto>>>(`/api/activity?${params}`);
 
             if (response.data.hasErrors) {
                 showNotification({ 
@@ -41,7 +53,7 @@ export const ActivitiesListing = () => {
 
             if (response.data.data) {
                 console.log('Fetched activities:', response.data.data); // Debug log
-                setActivities(response.data.data);
+                setPagedData(response.data.data);
             }
         } catch (error) {
             showErrorNotification(error, "Failed to fetch activities");
@@ -55,7 +67,7 @@ export const ActivitiesListing = () => {
     };
 
     const handleDelete = (id: number) => {
-        const activity = activities?.find(a => a.id === id);
+        const activity = pagedData?.items.find(a => a.id === id);
         if (activity) {
             setDeleteModal({
                 opened: true,
@@ -72,7 +84,11 @@ export const ActivitiesListing = () => {
         try {
             await axios.delete(`/api/activity/${deleteModal.id}`);
             
-            setActivities(prev => prev?.filter(a => a.id !== deleteModal.id));
+            setPagedData(prev => prev ? {
+                ...prev,
+                items: prev.items.filter(a => a.id !== deleteModal.id),
+                totalCount: prev.totalCount - 1
+            } : null);
             setDeleteModal({ opened: false, id: null, name: '' });
             
             showSuccessNotification("Activity deleted successfully");
@@ -85,6 +101,20 @@ export const ActivitiesListing = () => {
 
     const closeDeleteModal = () => {
         setDeleteModal({ opened: false, id: null, name: '' });
+    };
+
+    const handleSearch = (search: string) => {
+        setSearchTerm(search);
+        setCurrentPage(1); // Reset to first page when searching
+    };
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
+    const handlePageSizeChange = (newPageSize: number) => {
+        setPageSize(newPageSize);
+        setCurrentPage(1); // Reset to first page when changing page size
     };
 
     if (loading) {
@@ -107,15 +137,33 @@ export const ActivitiesListing = () => {
             title="Activities"
             onAddClick={() => navigate(routes.activityCreate)}
         >
-            {activities?.map((activity) => (
-                <div key={activity.id} className="flex justify-center w-full">
-                    <ActivityCard
-                        activity={activity}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
+            <Stack gap="md">
+                <SearchInput
+                    onSearch={handleSearch}
+                    placeholder="Search activities, locations, or types..."
+                />
+                
+                {pagedData?.items.map((activity) => (
+                    <div key={activity.id} className="flex justify-center w-full">
+                        <ActivityCard
+                            activity={activity}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                        />
+                    </div>
+                ))}
+                
+                {pagedData && (
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={pagedData.totalPages}
+                        totalItems={pagedData.totalCount}
+                        pageSize={pageSize}
+                        onPageChange={handlePageChange}
+                        onPageSizeChange={handlePageSizeChange}
                     />
-                </div>
-            ))}
+                )}
+            </Stack>
             
             <ConfirmationModal
                 opened={deleteModal.opened}

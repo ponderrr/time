@@ -2,10 +2,13 @@ import { Container, TextInput, Button, Space } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import axios from "../../config/axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 export const Login = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const { login, isAuthenticated } = useAuth();
     const form = useForm({
         initialValues: {
             username: '',
@@ -13,24 +16,19 @@ export const Login = () => {
         }
     });
 
+    // Redirect if already authenticated
+    if (isAuthenticated) {
+        const from = location.state?.from?.pathname || '/activities';
+        navigate(from, { replace: true });
+        return null;
+    }
+
     const handleSubmit = async (values: typeof form.values) => {
         try {
-            const response = await axios.post('/api/auth/login', values);
-            console.log('Login response:', response);
+            await login(values.username, values.password);
             
-            if (response.data.hasErrors) {
-                showNotification({
-                    message: response.data.errors[0]?.message || "Login failed",
-                    color: "red"
-                });
-                return;
-            }
-
-            // Store the token
-            localStorage.setItem('token', response.data.data.token);
-            
-            // Navigate to activities page
-            navigate('/activities');
+            const from = location.state?.from?.pathname || '/activities';
+            navigate(from, { replace: true });
             
             showNotification({
                 message: "Login successful",

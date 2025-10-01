@@ -9,6 +9,8 @@ import { Navigation } from './components/Navigation';
 import { theme } from './theme';
 import { Login } from './pages/auth/login';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { AuthProvider } from './contexts/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 // Import your page components
 import { ActivitiesListing } from './pages/activities/activities-listing';
@@ -40,54 +42,58 @@ function App() {
     <ErrorBoundary>
       <MantineProvider theme={theme} defaultColorScheme={colorScheme}>
         <Notifications />
-        <Router>
+        <AuthProvider>
+          <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route
             path="/*"
             element={
-              <AppShell
-                header={{ height: 60 }}
-                padding="md"
-              >
-                <AppShell.Header>
-                  <Navigation />
-                </AppShell.Header>
-              
-              <AppShell.Main className="bg-[#1A1B1E]">
-                  <Box className="w-full">
+              <ProtectedRoute>
+                <AppShell
+                  header={{ height: 60 }}
+                  padding="md"
+                >
+                  <AppShell.Header>
+                    <Navigation />
+                  </AppShell.Header>
+                
+                <AppShell.Main className="bg-[#1A1B1E]">
                     <Box className="w-full">
-                      <Routes>
-                        <Route path={routes.activityListing} element={<ActivitiesListing />} />
-                        <Route path={routes.activityCreate} element={<ActivitiesCreate />} />
-                        <Route path={routes.activityUpdate} element={<ActivitiesUpdate />} />
-                        
-                        <Route path={routes.activityTypeListing} element={<ActivityTypesListing />} />
-                        <Route path={routes.activityTypeCreate} element={<ActivityTypesCreate />} />
-                        <Route path={routes.activityTypeUpdate} element={<ActivityTypesUpdate />} />
-                        
-                        <Route path={routes.locationListing} element={<LocationsListing />} />
-                        <Route path={routes.locationCreate} element={<LocationsCreate />} />
-                        <Route path={routes.locationUpdate} element={<LocationsUpdate />} />
-                        
-                        <Route path={routes.productListing} element={<ProductsListing />} />
-                        <Route path={routes.productCreate} element={<ProductsCreate />} />
-                        <Route path={routes.productUpdate} element={<ProductsUpdate />} />
-                        
-                        <Route path={routes.activityTagListing} element={<ActivityTagsListing />} />
-                        <Route path={routes.activityTagCreate} element={<ActivityTagsCreate />} />
-                        <Route path={routes.activityTagUpdate} element={<ActivityTagsUpdate />} />
-                        
-                        <Route path="/" element={<Navigate to="/login" />} />
-                      </Routes>
+                      <Box className="w-full">
+                        <Routes>
+                          <Route path={routes.activityListing} element={<ActivitiesListing />} />
+                          <Route path={routes.activityCreate} element={<ActivitiesCreate />} />
+                          <Route path={routes.activityUpdate} element={<ActivitiesUpdate />} />
+                          
+                          <Route path={routes.activityTypeListing} element={<ActivityTypesListing />} />
+                          <Route path={routes.activityTypeCreate} element={<ActivityTypesCreate />} />
+                          <Route path={routes.activityTypeUpdate} element={<ActivityTypesUpdate />} />
+                          
+                          <Route path={routes.locationListing} element={<LocationsListing />} />
+                          <Route path={routes.locationCreate} element={<LocationsCreate />} />
+                          <Route path={routes.locationUpdate} element={<LocationsUpdate />} />
+                          
+                          <Route path={routes.productListing} element={<ProductsListing />} />
+                          <Route path={routes.productCreate} element={<ProductsCreate />} />
+                          <Route path={routes.productUpdate} element={<ProductsUpdate />} />
+                          
+                          <Route path={routes.activityTagListing} element={<ActivityTagsListing />} />
+                          <Route path={routes.activityTagCreate} element={<ActivityTagsCreate />} />
+                          <Route path={routes.activityTagUpdate} element={<ActivityTagsUpdate />} />
+                          
+                          <Route path="/" element={<Navigate to={routes.activityListing} />} />
+                        </Routes>
+                      </Box>
                     </Box>
-                  </Box>
-                </AppShell.Main>
-              </AppShell>
+                  </AppShell.Main>
+                </AppShell>
+              </ProtectedRoute>
             }
           />
         </Routes>
-        </Router>
+          </Router>
+        </AuthProvider>
       </MantineProvider>
     </ErrorBoundary>
   );
