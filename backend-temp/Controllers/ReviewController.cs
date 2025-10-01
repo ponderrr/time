@@ -107,7 +107,7 @@ public class ReviewController : ControllerBase
     {
         var response = new Response();
         
-        if (updateDto.Rating < 0 || updateDto.Rating > 100)
+        if (updateDto.Rating < 0 || updateDto.Rating > 5)
         {
             response.AddError(nameof(updateDto.Rating), "Rating must be between 0 and 5");
         }

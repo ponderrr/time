@@ -19,11 +19,11 @@ public class LocationController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAll()
+    public IActionResult GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? search = null)
     {
         var response = new Response();
         
-        var data = _dataContext
+        var query = _dataContext
             .Set<Location>()
             .Select(location => new LocationGetDto
             {
@@ -33,10 +33,20 @@ public class LocationController : ControllerBase
                 State = location.State,
                 Country = location.Country,
                 Description = location.Description
-            })
-            .ToList();
+            });
+
+        // Apply search filter if provided
+        if (!string.IsNullOrEmpty(search))
+        {
+            query = query.Where(l => l.Name.Contains(search) || 
+                                    l.City.Contains(search) ||
+                                    l.State.Contains(search) ||
+                                    l.Country.Contains(search));
+        }
+
+        var pagedResult = PaginationHelper.GetPagedResult(query, page, pageSize);
         
-        response.Data = data;
+        response.Data = pagedResult;
         return Ok(response);
     }
 

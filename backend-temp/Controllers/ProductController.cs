@@ -20,11 +20,11 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAll()
+    public IActionResult GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? search = null)
     {
         var response = new Response();
     
-        var data = _dataContext
+        var query = _dataContext
             .Set<Product>()
             .Include(p => p.Location)
             .Select(product => new ProductGetDto
@@ -39,10 +39,19 @@ public class ProductController : ControllerBase
                 Description = product.Description,
                 Location = product.Location,
                 Reviews = new List<ReviewGetDto>()  // Initialize empty reviews list
-            })
-            .ToList();
+            });
+
+        // Apply search filter if provided
+        if (!string.IsNullOrEmpty(search))
+        {
+            query = query.Where(p => p.Name.Contains(search) || 
+                                    p.Description.Contains(search) ||
+                                    p.LocationName.Contains(search));
+        }
+
+        var pagedResult = PaginationHelper.GetPagedResult(query, page, pageSize);
     
-        response.Data = data;
+        response.Data = pagedResult;
         return Ok(response);
     }
 

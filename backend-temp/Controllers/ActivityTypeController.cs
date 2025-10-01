@@ -19,21 +19,28 @@ public class ActivityTypeController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAll()
+    public IActionResult GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? search = null)
     {
         var response = new Response();
         
-        var data = _dataContext
+        var query = _dataContext
             .Set<ActivityType>()
             .Select(activityType => new ActivityTypeGetDto
             {
                 Id = activityType.Id,
                 Name = activityType.Name,
-            })
-            .ToList();
+            });
+
+        // Apply search filter if provided
+        if (!string.IsNullOrEmpty(search))
+        {
+            query = query.Where(at => at.Name.Contains(search));
+        }
+
+        var pagedResult = PaginationHelper.GetPagedResult(query, page, pageSize);
         
-        response.Data = data;
-        return Ok(response); // returns HTTP 200
+        response.Data = pagedResult;
+        return Ok(response);
     }
 
     [HttpGet("{id}")]

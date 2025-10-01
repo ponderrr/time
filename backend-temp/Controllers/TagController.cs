@@ -19,11 +19,11 @@ public class TagController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAll()
+    public IActionResult GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? search = null)
     {
         var response = new Response();
         
-        var data = _dataContext
+        var query = _dataContext
             .Set<Tag>()
             .Include(t => t.ActivityTags)
                 .ThenInclude(at => at.Activity)
@@ -31,7 +31,7 @@ public class TagController : ControllerBase
             {
                 Id = tag.Id,
                 Name = tag.Name,
-                Activities = tag.ActivityTags.Select(at => new ActivityBriefDto 
+                Activities = tag.ActivityTags.Select(at => new ActivityBriefDto
                 {
                     Id = at.Activity.Id,
                     Name = at.Activity.Name,
@@ -39,10 +39,17 @@ public class TagController : ControllerBase
                     State = at.Activity.Location.State,
                     StartTime = at.Activity.StartTime
                 }).ToList()
-            })
-            .ToList();
+            });
+
+        // Apply search filter if provided
+        if (!string.IsNullOrEmpty(search))
+        {
+            query = query.Where(t => t.Name.Contains(search));
+        }
+
+        var pagedResult = PaginationHelper.GetPagedResult(query, page, pageSize);
         
-        response.Data = data;
+        response.Data = pagedResult;
         return Ok(response);
     }
 

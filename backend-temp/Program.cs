@@ -113,7 +113,7 @@ builder.Services.AddRateLimiter(options =>
             partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
             factory: _ => new FixedWindowRateLimiterOptions
             {
-                PermitLimit = 5, // Allow 5 requests per window
+                PermitLimit = 3, // Allow 3 requests per window
                 Window = TimeSpan.FromMinutes(1), // 1-minute window
                 QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
                 QueueLimit = 2 // Allow up to 2 queued requests

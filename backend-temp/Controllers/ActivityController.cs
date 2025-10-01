@@ -21,12 +21,13 @@ public class ActivityController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAll()
+    public IActionResult GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? search = null)
     {
         var response = new Response();
     
-        var data = _dataContext
+        var query = _dataContext
             .Set<Activity>()
+            .Where(a => !a.IsDeleted)
             .Include(a => a.Location)
             .Include(a => a.ActivityType)
             .Include(a => a.Products)
@@ -74,10 +75,19 @@ public class ActivityController : ControllerBase
                     Id = at.Tag.Id,
                     Name = at.Tag.Name
                 }).ToList()
-            })
-            .ToList();
-    
-        response.Data = data;
+            });
+
+        // Apply search filter if provided
+        if (!string.IsNullOrEmpty(search))
+        {
+            query = query.Where(a => a.Name.Contains(search) || 
+                                   a.Location.Name.Contains(search) ||
+                                   a.ActivityType.Name.Contains(search));
+        }
+
+        var pagedResult = PaginationHelper.GetPagedResult(query, page, pageSize);
+        
+        response.Data = pagedResult;
         return Ok(response);
     }
 
@@ -453,7 +463,7 @@ public class ActivityController : ControllerBase
         var response = new Response();
         
         var activityToDelete = _dataContext.Set<Activity>()
-            .FirstOrDefault(activity => activity.Id == id);
+            .FirstOrDefault(activity => activity.Id == id && !activity.IsDeleted);
 
         if (activityToDelete == null)
         {
@@ -461,7 +471,9 @@ public class ActivityController : ControllerBase
             return NotFound(response);
         }
 
-        _dataContext.Set<Activity>().Remove(activityToDelete);
+        // Soft delete
+        activityToDelete.IsDeleted = true;
+        activityToDelete.DeletedAt = DateTimeOffset.UtcNow;
         _dataContext.SaveChanges();
 
         response.Data = true;

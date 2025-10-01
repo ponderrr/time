@@ -129,11 +129,62 @@ public IActionResult Login([FromBody] LoginDto loginDto)
         public required string Password { get; set; }
     }
 
+    [HttpPost("register")]
+    public IActionResult Register([FromBody] RegisterDto registerDto)
+    {
+        var response = new Response<LoginResponseDto>();
+
+        // Validate password
+        if (!_securityService.IsPasswordValid(registerDto.Password))
+        {
+            response.AddError("password", "Password must be at least 8 characters long and contain uppercase, lowercase, digit, and special character");
+            return BadRequest(response);
+        }
+
+        // Check if username already exists
+        if (_dataContext.Users.Any(u => u.Username == registerDto.Username))
+        {
+            response.AddError("username", "Username already exists");
+            return BadRequest(response);
+        }
+
+        // Create new user
+        var hashedPassword = _securityService.HashPassword(registerDto.Password);
+        var newUser = new User
+        {
+            Username = registerDto.Username,
+            PasswordHash = hashedPassword,
+            IsAdmin = false
+        };
+
+        _dataContext.Users.Add(newUser);
+        _dataContext.SaveChanges();
+
+        // Generate token and return login response
+        var token = GenerateJwtToken(newUser);
+        var loginResponse = new LoginResponseDto
+        {
+            UserId = newUser.Id,
+            Username = newUser.Username,
+            Token = token,
+            IsAdmin = newUser.IsAdmin
+        };
+
+        response.Data = loginResponse;
+        return Created("", response);
+    }
+
     public class LoginResponseDto
     {
         public int UserId { get; set; }
         public required string Username { get; set; }
         public required string Token { get; set; }
         public bool IsAdmin { get; set; }
+    }
+
+    public class RegisterDto
+    {
+        public required string Username { get; set; }
+        public required string Password { get; set; }
     }
 }

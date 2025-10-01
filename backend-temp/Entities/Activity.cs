@@ -14,6 +14,8 @@ namespace LearningStarter.Entities;
     public int ActivityTypeId { get; set; }
     public DateTimeOffset StartTime { get; set; }
     public DateTimeOffset EndTime { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTimeOffset? DeletedAt { get; set; }
     
     public required Location Location { get; set; }
     public required ActivityType ActivityType { get; set; }
