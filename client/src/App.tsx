@@ -8,6 +8,7 @@ import '@mantine/notifications/styles.css';
 import { Navigation } from './components/Navigation';
 import { theme } from './theme';
 import { Login } from './pages/auth/login';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Import your page components
 import { ActivitiesListing } from './pages/activities/activities-listing';
@@ -36,9 +37,10 @@ function App() {
   };
 
   return (
-    <MantineProvider theme={theme} defaultColorScheme={colorScheme}>
-      <Notifications />
-      <Router>
+    <ErrorBoundary>
+      <MantineProvider theme={theme} defaultColorScheme={colorScheme}>
+        <Notifications />
+        <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route
@@ -85,8 +87,9 @@ function App() {
             }
           />
         </Routes>
-      </Router>
-    </MantineProvider>
+        </Router>
+      </MantineProvider>
+    </ErrorBoundary>
   );
 }
 

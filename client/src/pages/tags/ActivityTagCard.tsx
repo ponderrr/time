@@ -4,9 +4,10 @@ import { TagGetDto } from '../../constants/types';
 type ActivityTagCardProps = {
   tag: TagGetDto;
   onEdit: (id: number) => void;
+  onDelete: (id: number) => void;
 };
 
-const ActivityTagCard = ({ tag, onEdit }: ActivityTagCardProps) => {
+const ActivityTagCard = ({ tag, onEdit, onDelete }: ActivityTagCardProps) => {
   if (!tag) return null;
 
   return (
@@ -45,15 +46,24 @@ const ActivityTagCard = ({ tag, onEdit }: ActivityTagCardProps) => {
           )}
         </div>
 
-        <Button
-          variant="light"
-          color="brand"
-          fullWidth
-          mt="auto"
-          onClick={() => onEdit(tag.id)}
-        >
-          Edit Tag
-        </Button>
+        <Group gap="xs" mt="auto">
+          <Button
+            variant="light"
+            color="brand"
+            flex={1}
+            onClick={() => onEdit(tag.id)}
+          >
+            Edit
+          </Button>
+          <Button
+            variant="outline"
+            color="red"
+            flex={1}
+            onClick={() => onDelete(tag.id)}
+          >
+            Delete
+          </Button>
+        </Group>
       </Stack>
     </Card>
   );

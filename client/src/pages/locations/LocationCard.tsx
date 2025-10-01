@@ -4,9 +4,10 @@ import { LocationGetDto } from '../../constants/types';
 type LocationCardProps = {
   location: LocationGetDto;
   onEdit: (id: number) => void;
+  onDelete: (id: number) => void;
 };
 
-const LocationCard = ({ location, onEdit }: LocationCardProps) => {
+const LocationCard = ({ location, onEdit, onDelete }: LocationCardProps) => {
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder className="w-full max-w-[380px]">
       <Stack gap="xs">
@@ -23,15 +24,24 @@ const LocationCard = ({ location, onEdit }: LocationCardProps) => {
         
         <Text size="sm" mt="xs">{location.description}</Text>
 
-        <Button
-          variant="light"
-          color="brand"
-          fullWidth
-          mt="auto"
-          onClick={() => onEdit(location.id)}
-        >
-          Edit Location
-        </Button>
+        <Group gap="xs" mt="auto">
+          <Button
+            variant="light"
+            color="brand"
+            flex={1}
+            onClick={() => onEdit(location.id)}
+          >
+            Edit
+          </Button>
+          <Button
+            variant="outline"
+            color="red"
+            flex={1}
+            onClick={() => onDelete(location.id)}
+          >
+            Delete
+          </Button>
+        </Group>
       </Stack>
     </Card>
   );

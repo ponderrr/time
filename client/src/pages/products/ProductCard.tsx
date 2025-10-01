@@ -4,9 +4,10 @@ import { ProductGetDto } from '../../constants/types';
 type ProductCardProps = {
   product: ProductGetDto;
   onEdit: (id: number) => void;
+  onDelete: (id: number) => void;
 };
 
-const ProductCard = ({ product, onEdit }: ProductCardProps) => {
+const ProductCard = ({ product, onEdit, onDelete }: ProductCardProps) => {
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder className="w-full max-w-[380px]">
       <Stack gap="xs">
@@ -29,15 +30,24 @@ const ProductCard = ({ product, onEdit }: ProductCardProps) => {
           {product.description}
         </Text>
 
-        <Button
-          variant="light"
-          color="brand"
-          fullWidth
-          mt="md"
-          onClick={() => onEdit(product.id)}
-        >
-          Edit Product
-        </Button>
+        <Group gap="xs" mt="md">
+          <Button
+            variant="light"
+            color="brand"
+            flex={1}
+            onClick={() => onEdit(product.id)}
+          >
+            Edit
+          </Button>
+          <Button
+            variant="outline"
+            color="red"
+            flex={1}
+            onClick={() => onDelete(product.id)}
+          >
+            Delete
+          </Button>
+        </Group>
       </Stack>
     </Card>
   );
