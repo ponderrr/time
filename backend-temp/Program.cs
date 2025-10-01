@@ -104,6 +104,19 @@ builder.Services.AddSwaggerGen(c =>
 // Add Security Service
 builder.Services.AddScoped<ISecurityService, SecurityService>();
 
+// Add CSRF Service
+builder.Services.AddScoped<ICsrfService, CsrfService>();
+builder.Services.AddHttpContextAccessor();
+
+// Add Session support for CSRF
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 // Add Rate Limiting
 builder.Services.AddRateLimiter(options =>
 {
@@ -197,6 +210,7 @@ app.Use(async (context, next) =>
 
 app.UseRateLimiter();
 app.UseCors("AllowViteApp");
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

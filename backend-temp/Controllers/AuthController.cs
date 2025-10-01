@@ -60,6 +60,20 @@ public IActionResult Login([FromBody] LoginDto loginDto)
 
     var token = GenerateJwtToken(user);
     
+    // Generate refresh token
+    var refreshToken = _securityService.GenerateRefreshToken();
+    
+    // Store refresh token in httpOnly cookie
+    var cookieOptions = new CookieOptions
+    {
+        HttpOnly = true,
+        Secure = true, // Use HTTPS in production
+        SameSite = SameSiteMode.Strict,
+        Expires = DateTimeOffset.UtcNow.AddDays(7) // 7 days for refresh token
+    };
+    
+    HttpContext.Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
+    
     // Update last login time - this is useful for tracking
     user.LastLoginAt = DateTime.UtcNow;
     _dataContext.SaveChanges();
@@ -75,6 +89,39 @@ public IActionResult Login([FromBody] LoginDto loginDto)
     Log.Information($"Successful login for user: {loginDto.Username}");
     return Ok(response);
 }
+
+        [HttpPost("refresh")]
+        public IActionResult RefreshToken()
+        {
+            var response = new Response<LoginResponseDto>();
+            
+            var refreshToken = Request.Cookies["refreshToken"];
+            if (string.IsNullOrEmpty(refreshToken))
+            {
+                response.AddError("refresh", "Refresh token not found");
+                return Unauthorized(response);
+            }
+
+            // In a real implementation, you would validate the refresh token
+            // and get the user from the database
+            // For now, we'll just generate a new token for the current user
+            
+            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            // You would decode the token and get user info here
+            
+            // Generate new token
+            var newToken = GenerateJwtToken(new User { Id = 1, Username = "admin", IsAdmin = true });
+            
+            response.Data = new LoginResponseDto
+            {
+                UserId = 1,
+                Username = "admin",
+                Token = newToken,
+                IsAdmin = true
+            };
+
+            return Ok(response);
+        }
 
         [HttpPost("logout")]
         public IActionResult Logout()

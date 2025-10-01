@@ -17,6 +17,8 @@ class AuthService {
         const response = await axios.post<ApiResponse<LoginResponse>>('/auth/login', {
             username,
             password
+        }, {
+            withCredentials: true // Include cookies in the request
         });
 
         if (!response.data.hasErrors && response.data.data) {
@@ -39,6 +41,19 @@ class AuthService {
     private setTokens(auth: LoginResponse): void {
         localStorage.setItem(AuthService.TOKEN_KEY, auth.token);
         localStorage.setItem(AuthService.REFRESH_TOKEN_KEY, auth.refreshToken);
+    }
+
+    async refreshToken(): Promise<LoginResponse> {
+        const response = await axios.post<ApiResponse<LoginResponse>>('/auth/refresh', {}, {
+            withCredentials: true
+        });
+
+        if (!response.data.hasErrors && response.data.data) {
+            this.setTokens(response.data.data);
+            return response.data.data;
+        }
+        
+        throw new Error('Token refresh failed');
     }
 
     isAuthenticated(): boolean {
