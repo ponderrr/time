@@ -1,5 +1,7 @@
-import { Card, Text, Badge, Stack, Button, Group } from '@mantine/core';
-import { TagGetDto } from '../../constants/types';
+import { Card, Text, Stack, Button, Group } from "@mantine/core";
+import { useState } from "react";
+import { TagGetDto } from "../../constants/types";
+import { ConfirmationModal } from "../../components/ConfirmationModal";
 
 type ActivityTagCardProps = {
   tag: TagGetDto;
@@ -8,18 +10,43 @@ type ActivityTagCardProps = {
 };
 
 const ActivityTagCard = ({ tag, onEdit, onDelete }: ActivityTagCardProps) => {
+  const [deleteModalOpened, setDeleteModalOpened] = useState(false);
+
   if (!tag) return null;
 
-  return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder className="w-full h-full">
-      <Stack gap="xs">
-        <Text fw={500} size="lg">{tag.name}</Text>
+  const handleDeleteClick = () => {
+    setDeleteModalOpened(true);
+  };
 
-        <Text size="sm" c="dimmed">Used in Activities:</Text>
+  const handleDeleteConfirm = () => {
+    onDelete(tag.id);
+    setDeleteModalOpened(false);
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModalOpened(false);
+  };
+
+  return (
+    <Card
+      shadow="sm"
+      padding="lg"
+      radius="md"
+      withBorder
+      className="w-full h-full"
+    >
+      <Stack gap="xs">
+        <Text fw={500} size="lg">
+          {tag.name}
+        </Text>
+
+        <Text size="sm" c="dimmed">
+          Used in Activities:
+        </Text>
         <div className="flex flex-col gap-2">
           {tag.activities && tag.activities.length > 0 ? (
-            tag.activities.map(activity => (
-              <Card 
+            tag.activities.map((activity) => (
+              <Card
                 key={activity.id}
                 padding="xs"
                 radius="md"
@@ -42,7 +69,9 @@ const ActivityTagCard = ({ tag, onEdit, onDelete }: ActivityTagCardProps) => {
               </Card>
             ))
           ) : (
-            <Text size="sm" c="dimmed" fs="italic">Not used in any activities</Text>
+            <Text size="sm" c="dimmed" fs="italic">
+              Not used in any activities
+            </Text>
           )}
         </div>
 
@@ -59,12 +88,23 @@ const ActivityTagCard = ({ tag, onEdit, onDelete }: ActivityTagCardProps) => {
             variant="outline"
             color="red"
             flex={1}
-            onClick={() => onDelete(tag.id)}
+            onClick={handleDeleteClick}
           >
             Delete
           </Button>
         </Group>
       </Stack>
+
+      <ConfirmationModal
+        opened={deleteModalOpened}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Tag"
+        message={`Are you sure you want to delete the tag "${tag.name}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        confirmColor="red"
+      />
     </Card>
   );
 };

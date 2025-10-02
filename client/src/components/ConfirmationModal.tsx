@@ -27,7 +27,10 @@ export const ConfirmationModal = ({
   return (
     <Modal
       opened={opened}
-      onClose={onClose}
+      onClose={loading ? () => {} : onClose}
+      closeOnEscape={!loading}
+      closeOnClickOutside={!loading}
+      withCloseButton={!loading}
       title={
         <Group gap="xs">
           <IconAlertTriangle size={20} color="var(--mantine-color-red-6)" />

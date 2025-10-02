@@ -5,7 +5,6 @@ import {
   Badge,
   Stack,
   Button,
-  Flex,
   Image,
 } from "@mantine/core";
 import { ActivityGetDto } from "../../constants/types";
@@ -62,6 +61,20 @@ const getPriceRating = (products: ActivityGetDto["products"]): number => {
 };
 
 const ActivityCard = ({ activity, onEdit, onDelete }: ActivityCardProps) => {
+  // Helper function to safely format location display
+  const formatLocation = () => {
+    if (!activity.location) {
+      return "Location unavailable";
+    }
+
+    const parts = [];
+    if (activity.location.name) parts.push(activity.location.name);
+    if (activity.location.city) parts.push(activity.location.city);
+    if (activity.location.state) parts.push(activity.location.state);
+
+    return parts.length > 0 ? parts.join(" • ") : "Location unavailable";
+  };
+
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder className="w-full">
       <Stack gap="xs">
@@ -83,8 +96,7 @@ const ActivityCard = ({ activity, onEdit, onDelete }: ActivityCardProps) => {
         </Text>
 
         <Text size="sm" c="dimmed">
-          {activity.location?.name} • {activity.location?.city},{" "}
-          {activity.location?.state}
+          {formatLocation()}
         </Text>
 
         <Text size="sm">

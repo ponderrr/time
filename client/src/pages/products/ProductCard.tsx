@@ -1,5 +1,8 @@
-import { Card, Group, Text, Badge, Stack, Button } from '@mantine/core';
-import { ProductGetDto } from '../../constants/types';
+import { Card, Group, Text, Badge, Stack, Button } from "@mantine/core";
+import { IconTrash } from "@tabler/icons-react";
+import { useState } from "react";
+import { ProductGetDto } from "../../constants/types";
+import { ConfirmationModal } from "../../components/ConfirmationModal";
 
 type ProductCardProps = {
   product: ProductGetDto;
@@ -8,11 +11,34 @@ type ProductCardProps = {
 };
 
 const ProductCard = ({ product, onEdit, onDelete }: ProductCardProps) => {
+  const [deleteModalOpened, setDeleteModalOpened] = useState(false);
+
+  const handleDeleteClick = () => {
+    setDeleteModalOpened(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    onDelete(product.id);
+    setDeleteModalOpened(false);
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModalOpened(false);
+  };
+
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder className="w-full max-w-[380px]">
+    <Card
+      shadow="sm"
+      padding="lg"
+      radius="md"
+      withBorder
+      className="w-full max-w-[380px]"
+    >
       <Stack gap="xs">
         <Group justify="space-between" mb="xs">
-          <Text fw={500} size="lg">{product.name}</Text>
+          <Text fw={500} size="lg">
+            {product.name}
+          </Text>
           <Badge color="brand" variant="light">
             ${product.price.toFixed(2)}
           </Badge>
@@ -21,11 +47,11 @@ const ProductCard = ({ product, onEdit, onDelete }: ProductCardProps) => {
         <Text size="sm" c="dimmed">
           Location: {product.locationName}
         </Text>
-        
+
         <Text size="sm">
           Stock: {product.expectedQuantity} (Min: {product.minQuantity})
         </Text>
-        
+
         <Text size="sm" lineClamp={2}>
           {product.description}
         </Text>
@@ -43,12 +69,25 @@ const ProductCard = ({ product, onEdit, onDelete }: ProductCardProps) => {
             variant="outline"
             color="red"
             flex={1}
-            onClick={() => onDelete(product.id)}
+            onClick={handleDeleteClick}
+            aria-label={`Delete product ${product.name}`}
+            leftSection={<IconTrash size={16} />}
           >
             Delete
           </Button>
         </Group>
       </Stack>
+
+      <ConfirmationModal
+        opened={deleteModalOpened}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Product"
+        message={`Are you sure you want to delete "${product.name}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        confirmColor="red"
+      />
     </Card>
   );
 };
